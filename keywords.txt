@@ -1,0 +1,72 @@
+#######################################
+# Syntax Coloring Map Sample library
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+KeiganMotorI2C	KEYWORD1
+KM1_I2C	KEYWORD1
+KeiganMotor	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+disable	KEYWORD2
+enable	KEYWORD2
+init	KEYWORD2
+begin	KEYWORD2
+getPosition	KEYWARD2
+getVelocity	KEYWARD2
+getTorque	KEYWARD2
+write	KEYWORD2
+readRegister	KEYWORD2
+maxSpeed	KEYWORD2
+minSpeed	KEYWORD2
+curveType	KEYWORD2
+acc	KEYWORD2
+dec	KEYWORD2
+maxTorque	KEYWORD2
+teachingInterval	KEYWORD2
+playbackInterval	KEYWORD2
+qCurrentP	KEYWORD2
+qCurrentI	KEYWORD2
+qCurrentD	KEYWORD2
+speedP	KEYWORD2
+speedI	KEYWORD2
+speedD	KEYWORD2
+positionP	KEYWORD2
+resetPID	KEYWORD2
+motorMeasurementInterval	KEYWORD2 
+motorMeasurementByDefault	KEYWORD2
+interface	KEYWORD2
+response	KEYWORD2
+iMUMeasurementInterval	KEYWORD2
+iMUMeasurementByDefault	KEYWORD2
+readRegister	KEYWORD2
+saveAllRegisters	KEYWORD2
+readDeviceName	KEYWORD2
+readDeviceInfo	KEYWORD2
+resetRegister	KEYWORD2
+resetAllRegisters	KEYWORD2
+i2cSlaveAddress	KEYWORD2
+disable	KEYWORD2
+enable	KEYWORD2 
+speed	KEYWORD2
+speedRpm	KEYWORD2
+presetPosition	KEYWORD2
+runAtVelocity	KEYWORD2
+runAtVelocityRpm	KEYWORD2
+runForward	KEYWORD2
+runReverse	KEYWORD2
+moveToPosition	KEYWORD2
+moveToPositionDegree	KEYWORD2
+moveByDistance	KEYWORD2
+moveByDistanceDegree	KEYWORD2
+stop	KEYWORD2
+free	KEYWORD2
+wait	KEYWORD2
+led	KEYWORD2
+enableMotorMeasurement	KEYWORD2
+disableMotorMeasurement	KEYWORD2
+reboot	KEYWORD2
