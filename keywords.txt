@@ -5,6 +5,7 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
+Arduino-I2C-KM1	KEYWORD1
 KeiganMotorI2C	KEYWORD1
 KM1_I2C	KEYWORD1
 KeiganMotor	KEYWORD1
