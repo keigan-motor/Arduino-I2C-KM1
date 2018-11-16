@@ -1,10 +1,22 @@
 # Arduino-I2C-KM1
 KeiganMotor KM-1 control library using I2C communication
 
+# Documents web site
+ (https://document.keigan-motor.com)
+
 ## Description
 This library allows an Arduino/Genuino board to control KeiganMotor KM-1 using I2C communication.
 
+## Connection
+Please refer to the following page.
+- Japanese: (https://document.keigan-motor.com/software_dev/ports_on_wire)
+- English: TODO
+
+***NOTE***
+You should add pullup resisters as small as possible between SDA and Vdd and between SDL and Vdd.
+
 ## Basic
+Including the library and initialization are required to control KeiganMotor.
 ### Include library
 ```arduino
 #include "KM1_I2C.h"
@@ -29,6 +41,14 @@ motor.speedRpm(10);
 motor.runForward();
 ```
 
+### Change I2C Address
+```arduino
+motor.i2cSlaveAddress(0xB0);
+motor.saveAllRegisters();
+delay(2000);
+motor.reboot();
+```
+
 ## Requirement
 
 - Arduino UNO / Mega / Mega 2560
@@ -37,10 +57,7 @@ motor.runForward();
 ## Installation
 
     $ git clone https://github.com/keigan-motor/Arduino-I2C-KM1
-   
-***NOTE***
 
-You should add pullup resisters as small as possible between SDA and Vdd and between SDL and Vdd.
 
 ## Author
 
