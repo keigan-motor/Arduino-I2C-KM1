@@ -17,9 +17,9 @@ disable	KEYWORD2
 enable	KEYWORD2
 init	KEYWORD2
 begin	KEYWORD2
-getPosition	KEYWARD2
-getVelocity	KEYWARD2
-getTorque	KEYWARD2
+getPosition	KEYWORD2
+getVelocity	KEYWORD2
+getTorque	KEYWORD2
 write	KEYWORD2
 readRegister	KEYWORD2
 maxSpeed	KEYWORD2
