@@ -9,8 +9,8 @@ This library allows an Arduino/Genuino board to control KeiganMotor KM-1 using I
 
 ## Connection
 Please refer to the following page.
-- Japanese: (https://document.keigan-motor.com/software_dev/ports_on_wire)
-- English: TODO
+- Japanese: https://document.keigan-motor.com/software_dev/ports_on_wire
+- English: https://en.document.keigan-motor.com/development-environment/comm_on_wire.html
 
 ***NOTE***
 You should add pullup resisters as small as possible between SDA and Vdd and between SDL and Vdd.
@@ -27,7 +27,7 @@ Including the library and initialization are required to control KeiganMotor.
 ```arduino
 KeiganMotor motor(0xA0);
 ```
-### Start I2C
+### Start I2C communication
 ```arduino
 motor.begin();
 ```
@@ -39,6 +39,10 @@ motor.begin();
 motor.enable();
 motor.speedRpm(10);
 motor.runForward();
+motor.wait(5000); // Wait Queue
+motor.runReverse();
+motor.wait(5000);
+motor.stop();
 ```
 
 ### Change I2C Address
