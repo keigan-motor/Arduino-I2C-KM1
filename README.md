@@ -62,6 +62,9 @@ motor.reboot();
 
     $ git clone https://github.com/keigan-motor/Arduino-I2C-KM1
 
+## Zip
+
+    https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
 
 ## Author
 

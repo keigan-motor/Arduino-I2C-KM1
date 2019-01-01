@@ -1,0 +1,20 @@
+{
+    "name": "Arduino-I2C-KM1",
+    "keywords": "motor, motion, control, sensor",
+    "description": "KeiganMotor KM-1 control library using I2C communication",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/keigan-motor/Arduino-I2C-KM1.git"
+    },
+    "authors":
+    {
+        "name": "Takashi Tokuda",
+        "email": "support@keigan.co.jp",
+        "url": "http://www.keigan-motor.com"
+    },
+    "license": "MIT",
+    "frameworks": "arduino",
+    "platforms": "atmelavr",
+    "examples": "examples/*/*.ino"
+  }
