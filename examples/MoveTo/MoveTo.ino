@@ -5,17 +5,16 @@
 
 
 
-KeiganMotor motor(0xA0); 
+KeiganMotor motor(0xA0); // Start I2C communication
 
 void setup() {
-  
-  motor.begin(); // Start I2C communication
+
   motor.led(1, 255, 0, 0); // Set LED color solid:red
   motor.speedRpm(10); // Set speed
-  motor.presetPosition(0); // Set the current position as zero
+  //motor.presetPosition(0); // Set the current position as zero
   motor.enable(); // Enable Motor Action
   motor.moveToPositionDegree(90); // Move to position 90 degree
-  motor.wait(3000); // Wait for 3000 msec until next command
+  motor.wait(5000); // Wait for 3000 msec until next command
   motor.led(1, 0, 255, 0); // Set LED color solid:green
   motor.moveToPositionDegree(0); // Move to position 0 
   

@@ -45,6 +45,7 @@ response	KEYWORD2
 iMUMeasurementInterval	KEYWORD2
 iMUMeasurementByDefault	KEYWORD2
 readRegister	KEYWORD2
+readMotorMeasurement	KEYWORD2
 saveAllRegisters	KEYWORD2
 readDeviceName	KEYWORD2
 readDeviceInfo	KEYWORD2
