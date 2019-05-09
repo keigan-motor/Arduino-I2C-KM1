@@ -254,6 +254,13 @@
 #define CMD_READ_MOTION_USAGE 0xB1
 #define CMD_READ_MOTION_USAGE_LEN 5
 
+// Measurement Read
+#define CMD_READ_MOTOR_MEASUREMENT 0xB4
+#define CMD_READ_MOTOR_MEASUREMENT_LEN 5
+
+#define CMD_READ_IMU_MEASUREMENT 0xB5
+#define CMD_READ_IMU_MEASUREMENT_LEN 5
+
 // LED
 #define CMD_LED_SET_LED 0xE0
 #define CMD_LED_SET_LED_LEN 9
@@ -344,6 +351,7 @@ class KeiganMotor {
         void iMUMeasurementByDefault(bool isEnabled);//TODO 
 
         void readRegister(uint8_t reg);
+        void readMotorMeasurement(void);
         void saveAllRegisters();
 
         void readDeviceName(char *name);//TODO 

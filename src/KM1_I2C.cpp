@@ -12,6 +12,7 @@
 KeiganMotor::KeiganMotor(uint8_t address)
 {
     init(address);
+    Wire.begin();
 }
 
 void KeiganMotor::init(uint8_t address)
@@ -93,6 +94,12 @@ void KeiganMotor::readRegister(uint8_t reg, uint8_t *value, uint8_t value_len)
     Wire.endTransmission();
 }
 
+void KeiganMotor::readMotorMeasurement(void)
+{
+    write(CMD_READ_MOTOR_MEASUREMENT, NULL, 0);
+}
+
+
 float KeiganMotor::readFloat(uint8_t reg)
 {
     uint8_t value[sizeof(float)]; 
@@ -124,6 +131,13 @@ void KeiganMotor::dec(float value)
     write(CMD_REG_DEC, data, sizeof(float));
 }
 
+// Set max torque [N*m]
+void KeiganMotor::maxTorque(float value)
+{
+    uint8_t data[sizeof(float)] = {0};
+    float_big_encode(value, data);
+    write(CMD_REG_MAX_TORQUE, data, sizeof(float));
+}
 
 // Set I2C Slave address
 // NOTE) Need to saveAllRegisters() and reboot() to reflect change.
