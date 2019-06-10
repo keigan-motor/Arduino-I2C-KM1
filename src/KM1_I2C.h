@@ -345,7 +345,7 @@ class KeiganMotor {
 
         void motorMeasurementInterval(uint8_t interval);//TODO 
         void motorMeasurementByDefault(bool isEnabled);//TODO 
-        void interface(uint8_t flag);//TODO 
+        void interface(uint8_t flag); 
         void response(uint8_t flag);//TODO 
         void iMUMeasurementInterval(uint8_t interval);//TODO 
         void iMUMeasurementByDefault(bool isEnabled);//TODO 

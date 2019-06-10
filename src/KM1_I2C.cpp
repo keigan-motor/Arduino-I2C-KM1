@@ -139,6 +139,25 @@ void KeiganMotor::maxTorque(float value)
     write(CMD_REG_MAX_TORQUE, data, sizeof(float));
 }
 
+// Set interface port by bit flag
+// If set to 0, the interface port is ignored.
+//
+// bit7   | bit6 | bit5 | bit4 | bit3 | bit2     | bit1    | bit0
+// button | -    | -    | I2C  | USB  | microbit | Linkage | BLE
+//
+// NOTE) The priority when sending notification is as follows.
+//       BLE > Linkage > microbit > USB > I2C 
+// So you must set flag 0 that you don't want to receive data by notification. 
+// Any read command can be replyed via received port.
+// If you want to receive notification via I2C port, set flag as "0x90". (Button and I2C are enabled.)
+
+void KeiganMotor::interface(uint8_t flag)
+{
+    uint8_t data[] = {flag};
+    write(CMD_REG_INTERFACE, data, sizeof(data));
+}
+
+
 // Set I2C Slave address
 // NOTE) Need to saveAllRegisters() and reboot() to reflect change.
 void KeiganMotor::i2cSlaveAddress(uint8_t address)
