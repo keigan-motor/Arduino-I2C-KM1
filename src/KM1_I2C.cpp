@@ -81,7 +81,7 @@ void KeiganMotor::readRegister(uint8_t reg, uint8_t *value, uint8_t value_len)
     Wire.endTransmission();
 
     uint8_t len = value_len + 6;
-    Wire.beginTransmission(_address);
+
     Wire.requestFrom(_address, len);
 
     uint8_t cnt = 0;
@@ -91,7 +91,6 @@ void KeiganMotor::readRegister(uint8_t reg, uint8_t *value, uint8_t value_len)
         cnt ++;
     }
     
-    Wire.endTransmission();
 }
 
 void KeiganMotor::readMotorMeasurement(void)
