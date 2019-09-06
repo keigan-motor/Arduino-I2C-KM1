@@ -20,13 +20,12 @@ You don't add pullup resisters between SDA and Vdd and between SDL and Vdd becau
 ```arduino
 pinMode(SDA, INPUT); // For Arduino Uno, SDA = 4
 pinMode(SCL, INPUT);  // For Arduino Uno, SCL = 5
-
 ```
-### ESP32 or ESP8266
-Please add external pullup resisters from 1kOhm to 10kOhm as follows.
 
-  - between SDA and 5V(or 3.3V)
-  - between SCL and 5V(or 3.3V)
+### ESP32 or ESP8266
+Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PULLUP is not recommended because of stability.)
+- between SDA and 5V(or 3.3V) // Default SDA = 21
+- between SCL and 5V(or 3.3V) // Default SCL = 22
 
 ## Basic
 Including the library and initialization are required to control KeiganMotor.
