@@ -6,19 +6,27 @@ KeiganMotor KM-1 control library using I2C communication
 
 ## Description
 This library allows an Arduino/Genuino board to control KeiganMotor KM-1 using I2C communication.
+ESP32 or ESP8266 (by Espressif) is also available.
 
 ## Physical Connection
 Please refer to the following page.
 - Japanese: https://document.keigan-motor.com/software_dev/ports_on_wire
-- English: https://en.document.keigan-motor.com/development-environment/comm_on_wire.html
 
 ***NOTE***
-You don't add pullup resisters between SDA and Vdd and between SDL and Vdd because Arduino Library "Wire" enables internal pullup. If control is unstable, please add external pullup resisters from 1kOhm to 10kOhm and add the following lines in setup() function to disable internal pullup resisters..
+Please refer to the following about pull-up resister.
+
+### Arduino/Genuino
+You don't add pullup resisters between SDA and Vdd and between SDL and Vdd because Arduino Library "Wire" enables internal pullup automatically. If control is unstable, please add external pullup resisters from 1kOhm to 10kOhm and add the following lines in setup() function to disable internal pullup resisters..
 ```arduino
 pinMode(SDA, INPUT); // For Arduino Uno, SDA = 4
 pinMode(SCL, INPUT);  // For Arduino Uno, SCL = 5
 
 ```
+### ESP32 or ESP8266
+Please add external pullup resisters from 1kOhm to 10kOhm as follows.
+
+  - between SDA and 5V(or 3.3V)
+  - between SCL and 5V(or 3.3V)
 
 ## Basic
 Including the library and initialization are required to control KeiganMotor.
