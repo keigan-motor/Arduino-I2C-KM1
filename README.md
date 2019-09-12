@@ -27,6 +27,9 @@ Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PUL
 - between SDA and 5V(or 3.3V) // Default SDA = 21
 - between SCL and 5V(or 3.3V) // Default SCL = 22
 
+### M5 Stack
+M5 Stack do not need external pullup resisters because it has pullup resisters.
+
 ## Basic
 Including the library and initialization are required to control KeiganMotor.
 ### Include library
