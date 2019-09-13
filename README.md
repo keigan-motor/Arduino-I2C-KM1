@@ -17,12 +17,11 @@ Communication speed should be 100kHz or 400kHz.
 
 ***NOTE***
 Please refer to the following about pull-up resister.
-We recommend 
 
 ### Arduino/Genuino
 If control is unstable, please add external pullup resisters from 1kOhm to 10kOhm between (SDA and Vdd) and ) (SDL and Vdd) and add the following lines in setup() function to disable internal pullup resisters..
 ```arduino
-pinMode(SDA, INPUT); // For Arduino Uno, SDA = 4
+pinMode(SDA, INPUT);  // For Arduino Uno, SDA = 4
 pinMode(SCL, INPUT);  // For Arduino Uno, SCL = 5
 ```
 You may not need to add pullup resisters  because Arduino Library "Wire" enables internal pullup automatically, but we recommend to use external pull-up especially for 400kHz communication.
@@ -40,7 +39,6 @@ Including the library and initialization are required to control KeiganMotor.
 ### Include library
 ```arduino
 #include "KM1_I2C.h"
-
 ```
 ### Initialize with I2C slave address
 #### The default I2C address of KM-1 is "0x20" 

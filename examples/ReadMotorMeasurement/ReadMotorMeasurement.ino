@@ -1,13 +1,13 @@
 #include <KM1_I2C.h>
 #include <TypeUtility.h>
 
-// This example send "Read Motor Measurement Command" to KeiganMotor (I2C Address: 0xA0)
+// This example send "Read Motor Measurement Command" to KeiganMotor (I2C Address: 0x20)
 // and show Position, Velocity and Torque on Serial Monitor.
 
 // #1 Connect default I2C port to KeiganMotor KM-1 
-// #2 Initialize KeiganMotor with I2C slave address (default: 0xA0)
+// #2 Initialize KeiganMotor with I2C slave address (default: 0x20)
 
-KeiganMotor m(0xA0); 
+KeiganMotor m(0x20); 
 
 void setup() {
 
@@ -45,7 +45,7 @@ void loop() {
   
   m.readMotorMeasurement();
 
-  Wire.requestFrom(0xA0, 16); // (Address, bytes number)
+  Wire.requestFrom(0x20, 16); // (Address, bytes number)
   
   uint8_t len = 0;
   uint8_t receivedData[255];

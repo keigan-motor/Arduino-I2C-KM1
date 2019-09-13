@@ -1,10 +1,10 @@
 #include "KM1_I2C.h"
 
 // #1 Connect default I2C port to KeiganMotor KM-1 
-// #2 Initialize KeiganMotor with I2C slave address (default: 0xA0)
+// #2 Initialize KeiganMotor with I2C slave address (default: 0x20)
 
-KeiganMotor m1(0xA0); 
-KeiganMotor m2(0xB0); 
+KeiganMotor m1(0x20); 
+KeiganMotor m2(0x30); 
 
 void setup() {
 
