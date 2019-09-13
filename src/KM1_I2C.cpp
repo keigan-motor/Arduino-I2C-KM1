@@ -59,7 +59,7 @@ void KeiganMotor::appendID(uint8_t *data)
 void KeiganMotor::write(uint8_t command, uint8_t *value, uint8_t value_len)
 {
     uint8_t len = value_len + 5;
-    uint8_t data[255] = {0};
+    uint8_t data[50] = {0};
     data[0] = command;
     appendID(&data[1]);
     if(value_len > 0){
@@ -74,8 +74,11 @@ void KeiganMotor::write(uint8_t command, uint8_t *value, uint8_t value_len)
 void KeiganMotor::readRegister(uint8_t reg, uint8_t *value, uint8_t value_len)
 {
     // TODO
-    uint8_t data[] = {CMD_REG_READ_REGISTER, 0, 0, 0, 0};
-
+    uint8_t data[50] = {0};
+    data[0] = CMD_REG_READ_REGISTER;
+    appendID(&data[1]);
+    data[3] = reg;
+    
     Wire.beginTransmission(_address);
     Wire.write(data, CMD_REG_READ_REGISTER_LEN);
     Wire.endTransmission();
