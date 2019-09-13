@@ -1,14 +1,25 @@
 # Arduino-I2C-KM1
-KeiganMotor KM-1 control library using I2C communication
-NOTE) You can use this library also with ESP32 micro-controller series.
+This library allows an Arduino/Genuino board to control KeiganMotor as slave KM-1 using I2C communication.
+ESP32 or ESP8266 (by Espressif) is also available.
 
 # Documents web site
 - https://document.keigan-motor.com
 
-## Description
-This library allows an Arduino/Genuino board to control KeiganMotor as slave KM-1 using I2C communication.
-ESP32 or ESP8266 (by Espressif) is also available.
+## Requirement
 
+- Arduino UNO / Mega / Mega 2560
+- KeiganMotor KM-1 series
+
+## Installation
+
+    $ git clone https://github.com/keigan-motor/Arduino-I2C-KM1
+
+You can also install it from library manager. Keyword is "keigan".
+
+## Zip
+
+    https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
+    
 ## Physical Connection
 Please refer to the following page.
 - Japanese: https://document.keigan-motor.com/software_dev/ports_on_wire
@@ -75,19 +86,6 @@ motor.saveAllRegisters();
 delay(2000);
 motor.reboot();
 ```
-
-## Requirement
-
-- Arduino UNO / Mega / Mega 2560
-- KeiganMotor KM-1 series
-
-## Installation
-
-    $ git clone https://github.com/keigan-motor/Arduino-I2C-KM1
-
-## Zip
-
-    https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
 
 ## Author
 
