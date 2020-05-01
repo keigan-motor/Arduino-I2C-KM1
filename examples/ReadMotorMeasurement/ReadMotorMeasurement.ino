@@ -1,62 +1,91 @@
+/**
+ * @file ReadMotorMeasurement.ino
+ * @brief Read Motor Measurement example.
+ * @note Default I2C Slave Address is 0x20 (KeiganMotor KM-1 Series)
+ * @date 2020/5/1
+ * @author Takashi Tokuda (Keigan Inc.)
+ */
+
 #include <KM1_I2C.h>
 #include <TypeUtility.h>
 
-// This example send "Read Motor Measurement Command" to KeiganMotor (I2C Address: 0x20)
-// and show Position, Velocity and Torque on Serial Monitor.
+/** 
+ * @def M5_STACK_USE
+ * @brief Uncomment if using M5Stack and its LCD display
+ */
+// #define M5_STACK_USE
 
-// #1 Connect default I2C port to KeiganMotor KM-1 
-// #2 Initialize KeiganMotor with I2C slave address (default: 0x20)
+static int addr = 0x20;
+KeiganMotor m(addr); 
 
-KeiganMotor m(0x20); 
+static int read_error_cnt = 0; // read motor measurement error
 
 void setup() {
 
+#ifdef M5_STACK_USE
+  M5.begin();
+  M5.Lcd.setTextSize(3);
+#endif
+
   Serial.begin(115200);
-  Serial.println("Started");
-}
+  Serial.println("Read Motor Measurement");
 
-void handleReceivedData(uint8_t *data, uint8_t len) {
-    
-  uint8_t address = data[0];
-  uint8_t cmd = data[1];
-  
-  if (cmd == 0xB4 && len == 16) {
-    // Motor Measurement
-    float position = float_big_decode(&data[2]);
-    float velocity = float_big_decode(&data[6]);
-    float torque = float_big_decode(&data[10]);
+  m.enable();
+  m.runAtVelocityRpm(10);
 
-    Serial.print("[");
-    Serial.print(address, HEX);
-    Serial.print("] ");
-    Serial.print("Pos, Vel, Trq = ");
-    Serial.print(position);
-    Serial.print(", ");
-    Serial.print(velocity);
-    Serial.print(", ");
-    Serial.println(torque);
-
-  } 
-  
 }
 
 
 void loop() {
-  
-  m.readMotorMeasurement();
 
-  Wire.requestFrom(0x20, 16); // (Address, bytes number)
-  
-  uint8_t len = 0;
-  uint8_t receivedData[255];
+  // Request motor measurement data
+  bool success = m.readMotorMeasurement(); 
 
-  while (Wire.available()) { // slave may send less than requested
-    receivedData[len] = Wire.read();
-    len ++;
-  }
-  
-  handleReceivedData(receivedData, len);
+  float degree = 0; 
+  float rpm = 0; 
+  float torque = 0; 
 
-  delay(100); 
+  // True if received data is valid (without error).
+  if(success){
+    
+    degree = m.degree;
+    rpm    = m.rpm;
+    torque = m.torque;
+
+  } else read_error_cnt ++;
+    
+  Serial.print("[");
+  Serial.print(addr, HEX);
+  Serial.println("] ");
+  Serial.print("Pos [deg]: ");
+  Serial.println(degree);
+  Serial.print("Vel [rpm]: ");
+  Serial.println(rpm);
+  Serial.print("Trq [N*m]: ");
+  Serial.println(torque);
+  Serial.print("read error: ");
+  Serial.println(read_error_cnt);
+  Serial.print("seconds: ");
+  Serial.println(millis() / 1000);  
+  Serial.println();
   
+#ifdef M5_STACK_USE
+  M5.Lcd.setCursor(1, 1);
+  //M5.Lcd.clear();
+  M5.Lcd.print("[");
+  M5.Lcd.print(addr, HEX);
+  M5.Lcd.println("] ");
+  M5.Lcd.print("Pos [deg]: ");
+  M5.Lcd.println(degree);
+  M5.Lcd.print("Vel [rpm]: ");
+  M5.Lcd.println(rpm);
+  M5.Lcd.print("Trq [N*m]: ");
+  M5.Lcd.println(torque);
+  M5.Lcd.print("read error: ");
+  M5.Lcd.println(read_error_cnt);
+  M5.Lcd.print("seconds: ");
+  M5.Lcd.println(millis() / 1000);
+  M5.Lcd.println();
+#endif
+
 }

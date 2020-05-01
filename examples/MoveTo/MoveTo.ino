@@ -1,9 +1,12 @@
+/**
+ * @file MoveTo.ino
+ * @brief Move to absolute position example. (Position control).
+ * @note Default I2C Slave Address is 0x20 (KeiganMotor KM-1 Series)
+ * @date 2020/5/1
+ * @author Takashi Tokuda (Keigan Inc.)
+ */
+
 #include "KM1_I2C.h"
-
-// #1 Connect default I2C port to KeiganMotor KM-1 
-// #2 Initialize KeiganMotor with I2C slave address (default: 0x20)
-
-
 
 KeiganMotor motor(0x20); // Start I2C communication
 

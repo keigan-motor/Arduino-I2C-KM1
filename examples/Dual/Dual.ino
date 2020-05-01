@@ -1,7 +1,15 @@
+/**
+ * @file Dual.ino
+ * @brief Run two KeiganMotors at the same time.
+ * @ref  See Scan.ino sample to know the current I2C address of KeiganMotor
+ * @ref  See ChangeI2CAddress.ino sample to change I2C address
+ * @note Default I2C Slave Address is 0x20 (KeiganMotor KM-1 Series)
+ * @date 2020/5/1
+ * @author Takashi Tokuda (Keigan Inc.)
+ */
+
 #include "KM1_I2C.h"
 
-// #1 Connect default I2C port to KeiganMotor KM-1 
-// #2 Initialize KeiganMotor with I2C slave address (default: 0x20)
 
 KeiganMotor m1(0x20); 
 KeiganMotor m2(0x30); 
