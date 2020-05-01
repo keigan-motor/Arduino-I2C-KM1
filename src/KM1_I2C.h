@@ -1,414 +1,708 @@
+/**
+   @file KM1_I2C.h
+   @brief        KeiganMotor library using I2C communication
+   @brief        KeiganMotor を I2C 経由で制御するためのライブラリ
+   @details       This library uses Arduino "Wire" library.
+   @version      2.00
+   @date         2020/5/1
+   @author       Takashi Tokuda (Keigan Inc.)
+   @par          History              
+                 
+*/
+
 #ifndef km1_i2c_h
 #define km1_i2c_h
 
 #include <Wire.h>
 #include "CRC16.h"
-
-#define LIBRARY_VERSION 1.3.0
-
-
-#define PI (3.14159265358979f) // π: def. of PI
-#define RPM_TO_RADPERSEC(rpm) ((float)(rpm) * 2 * (PI) / 60)  
-#define RPM_TO_RADPERMILLIS(rpm) ((float)(rpm) * 2 * (PI) / 60 / 1000)  
-#define RADPERSEC_TO_RPM(rps) ((float)(rps) * 360 / (2 * (PI)))
-#define RADPERMILLIS_TO_RPM(rpms) ((float)(rpms) * 1000 * 360 / (2 * (PI)))
-#define DEGREES_TO_RADIANS(deg) ((float)(deg) * (PI) / 180)
-#define RADIANS_TO_DEGREES(rad) ((float)(rad) * 180 / (PI))
-
-// Read Registers
-#define CMD_REG_MAX_SPEED 0x02 
-#define CMD_REG_MAX_SPEED_LEN 9
-
-#define CMD_REG_MIN_SPEED 0x03 
-#define CMD_REG_MIN_SPEED_LEN 9
-
-#define CMD_REG_CURVE_TYPE 0x05 
-#define CMD_REG_CURVE_TYPE_LEN 6
-
-#define CMD_REG_ACC 0x07 
-#define CMD_REG_ACC_LEN 9
-
-#define CMD_REG_DEC 0x08 
-#define CMD_REG_DEC_LEN 9
-
-#define CMD_REG_JERK 0x0C
-#define CMD_REG_JERK_LEN 11
-
-#define CMD_REG_MAX_TORQUE 0x0E
-#define CMD_REG_MAX_TORQUE_LEN 9
-
-// #define CMD_REG_GEAR_RATIO 0x13
-// #define CMD_REG_GEAR_RATIO_LEN 9
-
-#define CMD_REG_TEACH_INTERVAL 0x16
-#define CMD_REG_TEACH_INTERVAL_LEN 9
-
-#define CMD_REG_PLAYBACK_INTERVAL 0x17
-#define CMD_REG_PLAYBACK_INTERVAL_LEN 9
-
-#define CMD_REG_Q_CURRENT_P 0x18
-#define CMD_REG_Q_CURRENT_P_LEN 9
-
-#define CMD_REG_Q_CURRENT_I 0x19
-#define CMD_REG_Q_CURRENT_I_LEN 9
-
-#define CMD_REG_Q_CURRENT_D 0x1A
-#define CMD_REG_Q_CURRENT_D_LEN 9
-
-#define CMD_REG_SPEED_P 0x1B 
-#define CMD_REG_SPEED_P_LEN 9
-
-#define CMD_REG_SPEED_I 0x1C 
-#define CMD_REG_SPEED_I_LEN 9
-
-#define CMD_REG_SPEED_D 0x1D 
-#define CMD_REG_SPEED_D_LEN 9
-
-#define CMD_REG_POSITION_P 0x1E 
-#define CMD_REG_POSITION_P_LEN 9
-
-#define CMD_REG_RESET_PID 0x22
-#define CMD_REG_RESET_PID_LEN 5
-
-#define CMD_REG_LIMIT_CURRENT 0x25 
-#define CMD_REG_LIMIT_CURRENT_LEN 9
-
-#define CMD_REG_MOTOR_MEAS_INTVL 0x2C 
-#define CMD_REG_MOTOR_MEAS_INTVL_LEN 6
-
-#define CMD_REG_MOTOR_MEAS_BY_DEFAULT 0x2D 
-#define CMD_REG_MOTOR_MEAS_BY_DEFAULT_LEN 6
-
-#define CMD_REG_INTERFACE 0x2E
-#define CMD_REG_INTERFACE_LEN 6
-
-#define CMD_REG_RESPONSE 0x2F 
-#define CMD_REG_RESPONSE_LEN 6
-
-#define CMD_REG_OWN_COLOR 0x3A 
-#define CMD_REG_OWN_COLOR_LEN 8
-
-#define CMD_REG_IMU_MEAS_INTVL 0x3C
-#define CMD_REG_IMU_MEAS_INTVL_LEN 6
-
-#define CMD_REG_IMU_MEAS_BY_DEFAULT 0x3D
-#define CMD_REG_IMU_MEAS_BY_DEFAULT_LEN 6
-
-#define CMD_REG_READ_REGISTER 0x40
-#define CMD_REG_READ_REGISTER_LEN 6
-
-#define CMD_REG_SAVE_ALL_REGISTERS 0x41 
-#define CMD_REG_SAVE_ALL_REGISTERS_LEN 5
-
-#define CMD_READ_DEVICE_NAME 0x46 
-#define CMD_READ_DEVICE_NAME_LEN 5
-
-#define CMD_READ_DEVICE_INFO 0x47 
-#define CMD_READ_DEVICE_INFO_LEN 5
-
-#define CMD_REG_RESET_REGISTER 0x4E 
-#define CMD_REG_RESET_REGISTER_LEN 6
-
-#define CMD_REG_RESET_ALL_REGISTERS 0x4F 
-#define CMD_REG_RESET_ALL_REGISTERS_LEN 5
-
-// Read Status
-#define CMD_READ_STATUS 0x9A 
-#define CMD_READ_STATUS_LEN 5
-
-// I2C
-#define CMD_REG_I2C_SLAVE_ADDR 0xC0 
-#define CMD_REG_I2C_SLAVE_ADDR_LEN 6
-
-
-// Motor Disable and Enable
-#define CMD_DRIVER_DISABLE 0x50
-#define CMD_DRIVER_DISABLE_LEN 5
-
-#define CMD_DRIVER_ENABLE 0x51 
-#define CMD_DRIVER_ENABLE_LEN 5
-
-// Motor Motion Control
-#define CMD_ACT_SPEED 0x58 
-#define CMD_ACT_SPEED_LEN 9
-
-#define CMD_ACT_PRESET_POSITION 0x5A 
-#define CMD_ACT_PRESET_POSITION_LEN 9
-
-#define CMD_READ_POSITION_OFFSET 0x5B 
-#define CMD_READ_POSITION_OFFSET_LEN 5 
-
-#define CMD_ACT_RUN_FORWARD 0x60
-#define CMD_ACT_RUN_FORWARD_LEN 5
-
-#define CMD_ACT_RUN_REVERSE 0x61
-#define CMD_ACT_RUN_REVERSE_LEN 5
-
-#define CMD_ACT_RUN_AT_VELOCITY 0x62
-#define CMD_ACT_RUN_AT_VELOCITY_LEN 9
-
-#define CMD_ACT_MOVE_TO_POS_AT_SPEED 0x65
-#define CMD_ACT_MOVE_TO_POS_AT_SPEED_LEN 13
-
-#define CMD_ACT_MOVE_TO_POS 0x66
-#define CMD_ACT_MOVE_TO_POS_LEN 9
-
-#define CMD_ACT_MOVE_BY_DIST_AT_SPEED 0x67 
-#define CMD_ACT_MOVE_BY_DIST_AT_SPEED_LEN 13
-
-#define CMD_ACT_MOVE_BY_DIST 0x68 
-#define CMD_ACT_MOVE_BY_DIST_LEN 9
-
-#define CMD_ACT_FREE 0x6C
-#define CMD_ACT_FREE_LEN 5
-
-#define CMD_ACT_STOP 0x6D 
-#define CMD_ACT_STOP_LEN 5
-
-#define CMD_ACT_BRAKE 0x6E 
-#define CMD_ACT_BRAKE_LEN 5
-
-#define CMD_ACT_HOLD_TORQUE 0x72
-#define CMD_ACT_HOLD_TORQUE_LEN 9
-
-#define CMD_ACT_DO_TASKSET 0x81
-#define CMD_ACT_DO_TASKSET_LEN 11
-
-#define CMD_ACT_STOP_DO_TASKSET 0x82 
-#define CMD_ACT_STOP_DO_TASKSET_LEN 5
-
-#define CMD_ACT_START_PLAYBACK_MOTION_WO_PREP 0x85 
-#define CMD_ACT_START_PLAYBACK_MOTION_WO_PREP_LEN 12
-
-#define CMD_ACT_PREPARE_PLAYBACK_MOTION 0x86 
-#define CMD_ACT_PREPARE_PLAYBACK_MOTION_LEN 12
-
-#define CMD_ACT_START_PLAYBACK_MOTION 0x87 
-#define CMD_ACT_START_PLAYBACK_MOTION_LEN 5
-
-#define CMD_ACT_STOP_PLAYBACK_MOTION 0x88 
-#define CMD_ACT_STOP_PLAYBACK_MOTION_LEN 5
-
-// Queue
-#define CMD_QUE_PAUSE 0x90 
-#define CMD_QUE_PAUSE_LEN 5
-
-#define CMD_QUE_RESUME 0x91
-#define CMD_QUE_RESUME_LEN 5
-
-#define CMD_QUE_WAIT 0x92 
-#define CMD_QUE_WAIT_LEN 9
-
-#define CMD_QUE_ERASE_TASK 0x94
-#define CMD_QUE_ERASE_TASK_LEN 5
-
-#define CMD_QUE_RESET 0x95
-#define CMD_QUE_RESET_LEN 5
-
-// Recording Taskset
-#define CMD_T_START_RECORD_TASKSET 0xA0
-#define CMD_T_START_RECORD_TASKSET_LEN 7
-
-#define CMD_T_STOP_RECORD_TASKSET 0xA2
-#define CMD_T_STOP_RECORD_TASKSET_LEN 5
-
-#define CMD_T_ERASE_TASKSET 0xA3
-#define CMD_T_ERASE_TASKSET_LEN 7
-
-#define CMD_T_ERASE_ALL_TASKSETS 0xA4
-#define CMD_T_ERASE_ALL_TASKSETS_LEN 5
-
-#define CMD_T_TASKSET_NAME 0xA5
-#define CMD_T_TASKSET_NAME_LEN 20
-
-#define CMD_READ_TASKSET_INFO 0xA6 
-#define CMD_READ_TASKSET_INFO_LEN 7
-
-#define CMD_READ_TASKSET_USAGE 0xA7
-#define CMD_READ_TASKSET_USAGE_LEN 5
-
-// Teaching Motion
-#define CMD_DT_START_TEACH_MOTION_WO_PREP 0xA9 
-#define CMD_DT_START_TEACH_MOTION_WO_PREP_LEN 11
-
-#define CMD_DT_PREPARE_TEACH_MOTION 0xAA
-#define CMD_DT_PREPARE_TEACH_MOTION_LEN 11
-
-#define CMD_DT_START_TEACH_MOTION 0xAB
-#define CMD_DT_START_TEACH_MOTION_LEN 5
-
-#define CMD_DT_STOP_TEACH_MOTION 0xAC
-#define CMD_DT_STOP_TEACH_MOTION_LEN 5
-
-#define CMD_DT_ERASE_MOTION 0xAD
-#define CMD_DT_ERASE_MOTION_LEN 7
-
-#define CMD_DT_ERASE_ALL_MOTION 0xAE
-#define CMD_DT_ERASE_ALL_MOTION_LEN 5
-
-#define CMD_DT_MOTION_NAME 0xAF
-#define CMD_DT_MOTION_NAME_LEN 20
-
-#define CMD_READ_MOTION_INFO 0xB0
-#define CMD_READ_MOTION_INFO_LEN 7
-
-#define CMD_READ_MOTION_USAGE 0xB1
-#define CMD_READ_MOTION_USAGE_LEN 5
-
-// Measurement Read
-#define CMD_READ_MOTOR_MEASUREMENT 0xB4
-#define CMD_READ_MOTOR_MEASUREMENT_LEN 5
-
-#define CMD_READ_IMU_MEASUREMENT 0xB5
-#define CMD_READ_IMU_MEASUREMENT_LEN 5
-
-// LED
-#define CMD_LED_SET_LED 0xE0
-#define CMD_LED_SET_LED_LEN 9
-
-// Measurement Notification
-#define CMD_MOTOR_START_MEASUREMENT 0xE6
-#define CMD_MOTOR_START_MEASUREMENT_LEN 5
-
-#define CMD_MOTOR_STOP_MEASUREMENT 0xE7
-#define CMD_MOTOR_STOP_MEASUREMENT_LEN 5
-
-#define CMD_IMU_START_MEASUREMENT 0xEA
-#define CMD_IMU_START_MEASUREMENT_LEN 5
-
-#define CMD_IMU_STOP_MEASUREMENT 0xEB
-#define CMD_IMU_STOP_MEASUREMENT_LEN 5
-
-// Others
-#define CMD_OTHERS_REBOOT 0xF0
-#define CMD_OTHERS_REBOOT_LEN 5
-
-#define CMD_OTHERS_ENABLE_CHECK_SUM 0xF3
-#define CMD_OTHERS_ENABLE_CHECK_SUM_LEN 6
-
-#define CMD_OTHERS_SERIAL_NUMBER 0xFA
-#define CMD_OTHERS_SERIAL_NUMBER_LEN 6
-
-#define CMD_OTHERS_ADJUST_PHASE_DIFF 0xFB
-#define CMD_OTHERS_ADJUST_PHASE_DIFF_LEN 14
-
-#define CMD_OTHERS_DFU 0xFD
-#define CMD_OTHERS_DFU_LEN 5
-
-#define CMD_TASKSET_END_FLAG 0xFF
-#define CMD_TASKSET_END_FLAG_LEN 1
-
-
-class KeiganMotor {
-
-    // byte address;
-    // float position;
-    // float velocity;
-    // float torque;
-
-    public:
-        KeiganMotor(uint8_t address);
-
-        void init(uint8_t address);
-        void begin();
-
-        float getPosition();
-        float getVelocity();
-        float getTorque();
-
-        // Write / Read
-        void write(uint8_t command, uint8_t *value, uint8_t value_len);
-        void readRegister(uint8_t reg, uint8_t *value, uint8_t value_len);
-
-        // Registers
-        enum curveType {
-            CURVETYPE_NONE = 0,
-            CURVETYPE_TRAPEZOID = 1
-        };
-        void maxSpeed(float value); //TODO // Set max speed [rad/s]
-        void minSpeed(float value); //TODO // Set min speed [rad/s]
-        void curveType(uint8_t curveType); // Set motion control curve type 0:None, 1:Trapezoid
-        void acc(float value); // Set acceleration [rad/s^2]
-        void dec(float value); // Set deceleration [rad/s^2]
-        void maxTorque(float value); // Set max torque
-        void enableCheckSum(bool isEnabled); // Enable CheckSum (CRC16)
-        void teachingInterval(uint32_t interval_ms); // Set teaching interval (position sampling interval) [msec]
-        void playbackInterval(uint32_t interval_ms); // Set playback interval (position playback interval) [msec]
-
-            // PID Parameters //TODO 
-            void qCurrentP(float p);
-            void qCurrentI(float i);
-            void qCurrentD(float d);
-            void speedP(float p);
-            void speedI(float i);
-            void speedD(float d);
-            void positionP(float p);
-            void resetPID();
-
-        void motorMeasurementInterval(uint8_t interval);//TODO 
-        void motorMeasurementByDefault(bool isEnabled);//TODO 
-        void interface(uint8_t flag); 
-        void response(uint8_t flag);//TODO 
-        void iMUMeasurementInterval(uint8_t interval);//TODO 
-        void iMUMeasurementByDefault(bool isEnabled);//TODO 
-
-        void readRegister(uint8_t reg);
-        void readMotorMeasurement(void);
-        void saveAllRegisters();
-
-        void readDeviceName(char *name);//TODO 
-        void readDeviceInfo(uint8_t type,  char *str);//TODO 
-
-        void resetRegister(uint8_t reg); //TODO
-        void resetAllRegisters();
-
-        void i2cSlaveAddress(uint8_t address); // I2C Slave address. Need to saveAllRegisters() and reboot() to reflect.
-
-        // Motion Control
-        void disable(); // Disable Motor Action
-        void enable(); // Enable Motor Action and energize 
-        // Preset
-        void speed(float value); // Set motor speed [rad/s] 
-        void speedRpm(float rpm); // Set motor speed [rpm]
-        void presetPosition(float position); // Preset position: presetPosition(0) is set the current position as "Zero" 
-        // Speed Control
-        void runAtVelocity(float value); // Run motor at velocity [rad/s]
-        void runAtVelocityRpm(float rpm); // Run motor at velobity [rpm]
-        void runForward(); // Run motor forward (Direction Counter Clock Wise)
-        void runReverse(); // Run motor reverse (Direction Clock Wise)
-        // Position Control
-        void moveToPosition(float position); // Move to absolute position [radians]
-        void moveToPositionDegree(float degree); // Move to absolute position [degree]
-        void moveByDistance(float distance); // Move by distance [radians]
-        void moveByDistanceDegree(float degree); // Move by distance [degree]
-        // Stop
-        void stop(); // Stop and hold torque
-        void free(); // De-energize motor
-
-        // Queue
-        void wait(uint32_t time); // Wait for execution of next commands for time [msec].
-
-        // LED
-        enum led_state{
-            LED_STATE_OFF = 0,
-            LED_STATE_ON_SOLID = 1,
-            LED_STATE_ON_FLASH = 2
-        };
-
-        void led(uint8_t state, uint8_t r, uint8_t g, uint8_t b); // Set LED state
-      
-        void enableMotorMeasurement(); // TODO
-        void disableMotorMeasurement(); // TODO
-
-        // Others
-        void reboot();
-
-    private:
-        void appendID(uint8_t *data);
-        float readFloat(uint8_t reg);
-        uint8_t _address; // I2C address
-        uint16_t _commandID; // commandID
-        
+#include "command_list.h"
+#include "TypeUtility.h"
+
+#define LIBRARY_VERSION 1.5.0
+
+/**
+   @typedef error_t
+   @brief Error or success information of KeiganMotor
+*/
+typedef struct
+{
+  bool isValid; /**< true when the received data is valid (without error) */
+  uint16_t id; /**< identifier to specify command */
+  uint8_t cmd; /**< command number */
+  uint8_t code; /**< error code */
+  uint32_t info; /**< error detail information */
+} error_t;
+
+/**
+   @typedef motor_meas_t
+   @brief Motor measurement data of KeiganMotor
+   @details Get by using readMotorMeasurement()
+*/
+typedef struct
+{
+  bool isValid;
+  float position;
+  float velocity;
+  float torque;
+} motor_meas_t;
+
+/**
+   @typedef imu_meas_t
+   @brief IMU measurement data of KeiganMotor
+   @details Get by using readIMUMeasurement()
+*/
+typedef struct
+{
+  bool isValid;
+  int16_t accelX;
+  int16_t accelY;
+  int16_t accelZ;
+  int16_t temp;
+  int16_t gyroX;
+  int16_t gyroY;
+  int16_t gyroZ;
+} imu_meas_t;
+
+/**
+   @typedef status_t
+   @brief Status of KeiganMotor
+*/
+typedef struct
+{
+  bool isValid; /**< true when the received status is valid (without error)*/
+  bool isEnabled; /**< motor is enabled action */
+  bool isQueueRunning; /**< motor queue is running (not paused) */
+  bool isMotorMeasNotifyEnabled; /**< motor measurement notification enabled (always false when using I2C) */
+  bool isIMUMeasNotifyEnabled; /**< IMU measurement notification enabled (always false when using I2C) */
+  bool isCheckSumEnabled; /**< true when KeiganMotor validates CRC16(Checksum) */
+  uint8_t flashState;
+  uint8_t motorControlMode;
+
+} status_t;
+
+
+/**
+   @brief Safe run option
+   @details Motor action in case KeiganMotor cannot receive next action command
+*/
+enum SafeRunOption
+{
+  SAFE_RUN_TIMEOUT_FREE = 0, /**< free 非励磁状態 */
+  SAFE_RUN_TIMEOUT_DISABLE = 1, /**< disable 動作不許可状態 */
+  SAFE_RUN_TIMEOUT_STOP = 2, /**< run_at_velocity(0)  速度制御ゼロ */
+  SAFE_RUN_TIMEOUT_POS_FIX = 3 /**< fix position at the point その場で位置制御*/
+};
+
+/**
+   @enum LedState
+   @brief Led State of KeiganMotor
+*/
+enum LedState
+{
+  LED_STATE_OFF = 0, /**< off 消灯 */
+  LED_STATE_ON_SOLID = 1, /**< on 点灯 */
+  LED_STATE_ON_FLASH = 2 /**< on flashing 点滅 */
+};
+
+/**
+   @enum CurveType
+   @brief Curve type for motion control
+   @remark Set value 0 when sending run or move command continously in short period.
+*/
+enum CurveType
+{
+  CURVETYPE_NONE = 0, /**< No curve (Cylic) */
+  CURVETYPE_TRAPEZOID = 1 /**< Trapezoidal curve */
+};
+
+
+/**
+
+   KeiganMotor Class <br>
+   @brief Class to handle KeiganMotor via I2C Communication
+   @details It is able to control motor, change settings and read measurement data
+   KeiganMotor を I2C 経由で扱うためのクラス
+   モーターの制御や設定、測定値の取得を行う
+*/
+class KeiganMotor
+{
+
+  public:
+    /**
+       KeiganMotorコンストラクタ.
+       @brief Initialize by specifying I2C Address
+       @param address I2C address (7bit: 0x01~0x7E)
+       @
+    */
+    KeiganMotor(uint8_t address, int clock = 1000000);
+    void init(uint8_t address, int clock = 1000000);
+    /** @brief start I2C communication via Wire library */
+    void begin();
+
+
+    /**
+      @brief Status of KeiganMotor
+       KeiganMotor のステータス
+    */
+    status_t status; // Status
+
+    /** @brief Motor measurement data*/
+    motor_meas_t measurement;
+
+    /** @brief motor angle position [radian]*/
+    float position;
+    /** @brief motor angle position [degree]*/
+    float degree;
+
+    /** @brief motor angle velocity [radian/second]*/
+    float velocity;
+    /** @brief motor angle velocity [rotation/minute] (rpm)*/
+    float rpm;
+    /** @brief motor torque [N*m] */
+    float torque;
+
+    /** @brief IMU measurement data */
+    imu_meas_t imu; // IMU Measurement
+
+    /** @brief Error or success information*/
+    error_t error;
+
+    /** @brief returns error or success information
+        @return error
+
+    */
+    error_t getError();
+
+    /**
+       @brief Write command function
+       @param[in] command      command
+       @param[in] *value       value pointer to write
+       @param[in] value_len    value length
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @ref                    Use getError().code to get error code.
+    */
+    bool write(uint8_t command, uint8_t *value, uint8_t value_len, bool response = true); //!< Write command function.
+
+    /**
+       @brief Read register function
+       @param[in] reg          register
+       @param[out] *value      value pointer to read
+       @param[in] value_len    value length
+       @retval true            received data successfully
+       @retval false           got an error
+       @ref                    Use getError().code to get error code.
+    */
+    bool readRegister(uint8_t reg, uint8_t *value, uint8_t value_len);
+
+    /**
+       @brief Read status function
+       @param[in] reg          register
+       @param[out] *value      value pointer to read
+       @param[in] value_len    value length
+       @return status          Status of KeiganMotor (see status_t)
+    */
+    status_t readStatus(void);
+
+
+    /**
+       @brief Set max speed function to limit absolute value of velocity
+       @param[in] value        float speed to set [radian/second] 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */
+    bool maxSpeed(float value, bool response = true);          //TODO // Set max speed [rad/s]
+    
+    /**
+       @brief Set min speed function. It is used in case of "prepare playback motion"
+       @param[in] value        float speed to set [radian/second] 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */
+    bool minSpeed(float value, bool response = true);          //TODO // Set min speed [rad/s]
+
+    /**
+       @brief Set curve type function for motion control.
+       @param[in] type         CurveType to set  
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */    
+    bool curveType(CurveType type, bool response = true);   // Set motion control curve type 0:None, 1:Trapezoid
+
+    /**
+       @brief Set acceleration function. It is ignored when curve type is 0(CURVETYPE_NONE).
+       @param[in] value        float acceleration to set [radian/second^2] 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */
+    bool acc(float value, bool response = true);               // Set acceleration [rad/s^2]
+
+    /**
+       @brief Set deceleration function. It is ignored when curve type is 0(CURVETYPE_NONE).
+       @param[in] value        float deceleration to set [radian/second^2] 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */    
+    bool dec(float value, bool response = true);               // Set deceleration [rad/s^2]
+
+    /**
+       @brief Set Max torque function to limit current not to be above the torque.
+       @param[in] value        float max torque to set [N*m] 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */       
+    bool maxTorque(float value, bool response = true);         // Set max torque
+
+    /**
+       @brief Set checksum validadtion enabled.
+       @details KeiganMotor will validate received data after receiving this command.
+       @param[in] isEnabled    true if make Checksum validation enabled 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */       
+    bool enableCheckSum(bool isEnabled, bool response = true); // Enable CheckSum (CRC16)
+
+    /**
+       @brief Set Q-axis current PID controller gain P.
+       @param[in] value    Q-axis current PID controller gain P (proportional)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */
+    bool qCurrentP(float value, bool response = true);
+    
+     /**
+       @brief Set Q-axis current PID controller gain I.
+       @param[in] value    Q-axis current PID controller gain I (integral)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */   
+    
+    bool qCurrentI(float value, bool response = true);
+    /**
+       @brief Set Q-axis current PID controller gain D.
+       @param[in] value    Q-axis current PID controller gain D (differential)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */
+    bool qCurrentD(float value, bool response = true);
+    
+    /**
+       @brief Set Speed PID controller gain P.
+       @param[in] value    Speed PID controller gain P (proportional)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */    
+    bool speedP(float value, bool response = true);
+
+    /**
+       @brief Set Speed PID controller gain I.
+       @param[in] value    Speed PID controller gain I (integral)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */        
+    bool speedI(float value, bool response = true);
+
+    /**
+       @brief Set Speed PID controller gain D.
+       @param[in] value    Speed PID controller gain D (differential).
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */        
+    bool speedD(float value, bool response = true);
+
+    /**
+       @brief Set Position PID controller gain P 
+       @param[in] value    Position PID controller gain P (proportional)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */            
+    bool positionP(float value, bool response = true);
+
+    /**
+       @brief Set Position PID controller gain I
+       @param[in] value    Position PID controller gain I (integral)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark Position integral and differential term are ignored out of positionIDThreshold range. (See positionIDThreshold function)
+    */         
+    bool positionI(float value, bool response = true);
+
+    /**
+       @brief Set Position PID controller gain D
+       @param[in] value    Position PID controller gain D (differential).
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark Position integral and differential term are ignored out of positionIDThreshold range. (See positionIDThreshold function)
+    */           
+    bool positionD(float value, bool response = true);
+
+    /**
+       @brief Set Position PID controller gain D
+       @param[in] value    Position PID controller gain D (differential).
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark Position integral and differential term are ignored out of positionIDThreshold range. (See positionIDThreshold function)
+    */           
+    bool positionIDThreshold(float value, bool response = true);
+
+    /**
+       @brief Reset all the PID parameters to default
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark saveAllRegisters() is required to save in flash.
+    */      
+    bool resetPID(bool response = true);
+
+    /**
+       @brief Set available interface
+       @todo
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */     
+    bool interface(uint8_t flag, bool response = true);
+
+    /**
+       @brief Limit current
+       @param[in] value        Max current to limit. 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark Make this value big enough when you want to draw maximum energy from power source.
+    */   
+    bool limitCurrent(float value, bool response = true);
+
+    /**
+       @brief Set safe run mode to stop motor automatically when it cannot receive next command within a certain period (timeout).
+       @param[in] isEnabled    true if you want KeiganMotor stop automatically 
+       @param[in] timeout      timeout [millisecond]
+       @param[in] op           SafeRunOption (stop behaviour in case of timeout)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */   
+    bool safeRun(bool isEnabled, uint32_t timeout, SafeRunOption op, bool response = true);
+
+    /**
+       @brief Read motor measurement data
+       @details Position, velocity and torque values are available after sending this command.
+       @code 
+           if(m.readMotorMeasurement()){
+               Serial.print(degree: );
+               Serial.println(m.degree);
+           } else {
+               Serial.println("error");
+           }
+       @endcode
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */     
+    bool readMotorMeasurement(void);
+
+    /**
+     * @todo
+     * @remark You need to enable IMU measurement
+     */
+    bool readIMUMeasurement(void);
+
+    /**
+       @brief Save all the registers KeiganMotor retains.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark The register values are saved by this command permanently in the flash. 
+    */          
+    bool saveAllRegisters(bool response = true);
+
+    /**
+       @brief Reset a register value to default.
+       @param[in] reg          Register (See command_list.h)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark The register values are saved by this command permanently in the flash. 
+    */      
+    bool resetRegister(uint8_t reg, bool response = true);
+
+    /**
+       @brief Reset all the registers to default.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark saveAllRegisters() is required to save in flash.
+    */        
+    bool resetAllRegisters(bool response = true);
+    
+
+    /**
+     * @brief Read the device name 
+     * @details The name is like "KM-1U AI09#3R9"
+     * @todo
+     */
+    float readMaxTorque(void);  
+
+    /**
+     * @brief Read the KeiganMotor device name 
+     * @details The name is like "KM-1U AI09#3R9"
+     * @todo
+     */
+    bool readDeviceName(char *name);              
+
+    /**
+     * @brief Read the device information 
+     * @todo
+     */    
+    bool readDeviceInfo(uint8_t type, char *str); 
+
+    /**
+       @brief Set I2C slave address.
+       @param[in] address      I2C address (0x00~0x7F)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+       @remark saveAllRegisters() and reboot() is required to reflact the address value.
+       @code
+           if(m.i2cSlaveAddress(0x30)){
+               m.saveAllRegisters();
+               delay(3000);
+               m.reboot();
+           }
+       @codeend
+    */      
+    bool i2cSlaveAddress(uint8_t address, bool response = true); 
+
+    /**
+       @brief Disable motor action.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */   
+    bool disable(bool response = true); // Disable Motor Action
+
+    /**
+       @brief Enable motor action.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */  
+    bool enable(bool response = true); 
+
+    /**
+       @brief Set angle speed [radian/second]  
+       @param[in] value        speed [radian/second]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */    
+    bool speed(float value, bool response = true);            
+
+    /**
+       @brief Set angle speed [rotation/minute] (rpm)  
+       @param[in] value        speed [radian/second]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */        
+    bool speedRpm(float rpm, bool response = true);            // Set motor speed [rpm]
+
+    /**
+       @brief Set the current position as a certain position [radian]
+       @details presetPosition(0) makes the current position as "Zero" point. 
+       @param[in] value        preset position [radian]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */       
+    bool presetPosition(float value, bool response = true); 
+
+    /**
+       @brief Set the current position as a certain position [degree]
+       @details presetPositionDegree(30) makes the current position as "30 degree". 
+       @param[in] value        preset position [degree]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */           
+    bool presetPositionDegree(float degree, bool response = true); 
+
+
+    /** @name Velocity Control
+     *
+     */
+    /* @{ */
+    /**
+       @brief Run at a certain velocity [radian/second]
+       @details This function combines speed and runForward or runReverse function.
+       @param[in] value        velocity [radian/second]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */         
+    bool runAtVelocity(float value, bool response = true);  // Run motor at velocity [rad/s]
+
+    /**
+       @brief Run at a certain velocity [rotation/minute] (rpm)
+       @details Plus direction is counter clockwise when viewed from the rotation axis.
+       @details This function combines speed and runForward or runReverse function.
+       @param[in] value        velocity [rotation/minute] (rpm)
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */    
+    bool runAtVelocityRpm(float rpm, bool response = true); // Run motor at velobity [rpm]
+
+    /**
+       @brief Run forward
+       @details It uses preset speed value by function speed()
+       @details Forward direction is counter clockwise when viewed from the rotation axis.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */       
+    bool runForward(bool response = true);                // Run motor forward (Direction Counter Clock Wise)
+
+    /**
+       @brief Run Reverse
+       @details It uses preset speed value by function speed()
+       @details Forward direction is counter clockwise when viewed from the rotation axis.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */    
+    bool runReverse(bool response = true);                // Run motor reverse (Direction Clock Wise)
+
+    /**
+       @brief Stop
+       @details Keep velocity 0 by velocity control
+       @details Forward direction is counter clockwise when viewed from the rotation axis.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */      
+    bool stop(bool response = true); // Stop and hold torque
+    
+    /* @} */
+
+    
+    /** @name Position Control
+     *
+     */
+    /* @{ */
+   
+    /**
+       @brief Move to an absolute position [radian]
+       @details It uses preset speed value by function speed()
+       @param[in] position     position [radian]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */        
+    bool moveToPosition(float position, bool response = true);    
+
+    /**
+       @brief Move to an absolute position [degree]
+       @details It uses preset speed value by function speed()
+       @param[in] position     position [degree]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */       
+    bool moveToPositionDegree(float degree, bool response = true); // Move to absolute position [degree]
+    
+    /**
+       @brief Move by a distance (move to an relative position) [radian]
+       @details It uses preset speed value by function speed()
+       @param[in] distance     distance [radian]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */      
+    bool moveByDistance(float distance, bool response = true);     // Move by distance [radians]
+    
+    /**
+       @brief Move by a distance (move to an relative position) [degree]
+       @details It uses preset speed value by function speed()
+       @param[in] distance     distance [degree]
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */      
+    bool moveByDistanceDegree(float degree, bool response = true); // Move by distance [degree]
+    /* @} */
+    
+    /**
+       @brief De-energize motor (make motor free)
+       @details It keeps viscosity a little bit. You should use disable() to turn off rotational resistance completely.
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */      
+    bool free(bool response = true); 
+
+    /**
+       @brief  Wait for execution of next commands for time [msec].
+       @details KeiganMotor has a FIFO queue inside, and this function make its execution paused for the time. 
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */     
+    bool wait(uint32_t time, bool response = true); 
+
+    /**
+       @brief Set LED lit
+       @param[in] state        LedState
+       @param[in] r            Red brightness
+       @param[in] g            Green brightness       
+       @param[in] b            Blue brightness
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */      
+    bool led(LedState state, uint8_t r, uint8_t g, uint8_t b, bool response = true); 
+
+    /**
+       @brief Reboot KeiganMotor
+       @param[in] response     true if you require response after sending command, default:true
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */      
+    bool reboot(bool response = true);
+
+  private:
+    uint16_t appendID(uint8_t *data);
+    /**
+       @brief Write float command function
+       @param[in] command      command
+       @param[in] value        float value to write
+       @param[in] response     true if you require response after sending command
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */
+    bool writeFloat(uint8_t cmd, float val, bool response = true);
+    float readFloat(uint8_t reg);
+    uint8_t readByte(uint8_t reg);
+    uint32_t readUint32(uint8_t reg);
+    uint8_t _address;    // I2C address
+    uint16_t _commandID; // commandID
 };
 
 #endif // km1_i2c_h
