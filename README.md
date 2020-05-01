@@ -7,7 +7,7 @@ ESP32 or ESP8266 (by Espressif) is also available.
 
 ## Requirement
 
-- Arduino UNO / Mega / Mega 2560
+- Arduino UNO / Mega / Mega 2560 or ESP8266 / ESP32 series
 - KeiganMotor KM-1 series
 
 ## Installation
@@ -29,21 +29,18 @@ Communication speed should be 100kHz or 400kHz.
 ***NOTE***
 Please refer to the following about pull-up resister.
 
-### Arduino/Genuino
-If control is unstable, please add external pullup resisters from 1kOhm to 10kOhm between (SDA and Vdd) and ) (SDL and Vdd) and add the following lines in setup() function to disable internal pullup resisters..
-```arduino
-pinMode(SDA, INPUT);  // For Arduino Uno, SDA = 4
-pinMode(SCL, INPUT);  // For Arduino Uno, SCL = 5
-```
-You may not need to add pullup resisters  because Arduino Library "Wire" enables internal pullup automatically, but we recommend to use external pull-up especially for 400kHz communication.
 
-### ESP32 or ESP8266
+#### Pullup resisters
 Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PULLUP is not recommended.)
-- between SDA and 5V(or 3.3V) // Default SDA = 21
-- between SCL and 5V(or 3.3V) // Default SCL = 22
+- between SDA and 3.3V // Default SDA = 21
+- between SCL and 3.3V // Default SCL = 22
 
-### M5 Stack
-M5 Stack do not need external pullup resisters because it already has external pullup resisters.
+***NOTE***
+KeiganMotor uses 3.3V for SDA and SCL lines.
+
+##### M5 Stack and Raspberry Pi
+They do not need external pullup resisters because it already has external pullup resisters.
+
 
 ## Basic
 Including the library and initialization are required to control KeiganMotor.
@@ -78,6 +75,11 @@ motor.runReverse();
 delay(5000);
 motor.stop();
 ```
+
+***NOTE***
+Please use delay(ms) instead of motor.wait(ms).
+The latter can cause restart of KeiganMotor if sending continuously.
+
 
 ### Change I2C Address
 ```arduino

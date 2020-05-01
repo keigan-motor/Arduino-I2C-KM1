@@ -6,6 +6,7 @@
 #include <inttypes.h>
 #include "Arduino.h"
 
+static bool crc16_ready = false;
 
 // #define _ESP32_HAL_I2C_H_
 
@@ -13,6 +14,9 @@ KeiganMotor::KeiganMotor(uint8_t address)
 {
     init(address);
     Wire.begin();
+    if(!crc16_ready){
+        crc16_init();
+    }
 }
 
 void KeiganMotor::init(uint8_t address)
@@ -66,9 +70,11 @@ void KeiganMotor::write(uint8_t command, uint8_t *value, uint8_t value_len)
         memcpy(&data[3], value, value_len);
     }
     // TODO CheckSum
+    append_crc16(data, len-2);
     Wire.beginTransmission(_address);
     Wire.write(data, len);
     Wire.endTransmission();
+    // delay(1);
 }
 
 void KeiganMotor::readRegister(uint8_t reg, uint8_t *value, uint8_t value_len)
@@ -100,6 +106,24 @@ void KeiganMotor::readMotorMeasurement(void)
 {
     write(CMD_READ_MOTOR_MEASUREMENT, NULL, 0);
 }
+
+// void KeiganMotor::readMotorMeasurement2(void)
+// {
+//     uint8_t val[20];
+
+//     readRegisters(CMD_READ_MOTOR_MEASUREMENT, val, 12);
+
+
+//     uint8_t address = data[0];
+//     uint8_t cmd = data[1];
+  
+//   if (cmd == 0xB4 && len == 16) {
+    
+//     // Motor Measurement
+//     float position = float_big_decode(&data[2]);
+//     float velocity = float_big_decode(&data[6]);
+//     float torque = float_big_decode(&data[10]);
+// }
 
 
 float KeiganMotor::readFloat(uint8_t reg)
@@ -140,6 +164,14 @@ void KeiganMotor::maxTorque(float value)
     float_big_encode(value, data);
     write(CMD_REG_MAX_TORQUE, data, sizeof(float));
 }
+
+// Enable CheckSum
+void KeiganMotor::enableCheckSum(bool isEnabled)
+{
+    uint8_t data[] = {isEnabled};
+    write(CMD_OTHERS_ENABLE_CHECK_SUM, data, sizeof(data));
+}
+
 
 // Set interface port by bit flag
 // If set to 0, the interface port is ignored.
@@ -217,7 +249,9 @@ void KeiganMotor::runAtVelocityRpm(float rpm)
 
 void KeiganMotor::presetPosition(float position)
 {
-    // TODO
+    uint8_t data[sizeof(float)] = {0};
+    float_big_encode(position, data);
+    write(CMD_ACT_PRESET_POSITION, data, sizeof(float));
 }
 
 void KeiganMotor::runForward()

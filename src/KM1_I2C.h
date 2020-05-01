@@ -2,8 +2,9 @@
 #define km1_i2c_h
 
 #include <Wire.h>
+#include "CRC16.h"
 
-#define LIBRARY_VERSION 1.0.0
+#define LIBRARY_VERSION 1.3.0
 
 
 #define PI (3.14159265358979f) // π: def. of PI
@@ -329,7 +330,8 @@ class KeiganMotor {
         void curveType(uint8_t curveType); // Set motion control curve type 0:None, 1:Trapezoid
         void acc(float value); // Set acceleration [rad/s^2]
         void dec(float value); // Set deceleration [rad/s^2]
-        void maxTorque(float value); //TODO // Set max torque
+        void maxTorque(float value); // Set max torque
+        void enableCheckSum(bool isEnabled); // Enable CheckSum (CRC16)
         void teachingInterval(uint32_t interval_ms); // Set teaching interval (position sampling interval) [msec]
         void playbackInterval(uint32_t interval_ms); // Set playback interval (position playback interval) [msec]
 

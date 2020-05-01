@@ -126,6 +126,31 @@ uint16_t uint16_big_decode(const uint8_t * p_encoded_data)
 }
 
 
+/**@brief Function for encoding a uint16 value.
+ *
+ * @param[in]   value            Value to be encoded.
+ * @param[out]  p_encoded_data   Buffer where the encoded data is to be written.
+ *
+ * @return      Number of bytes written.
+ */
+uint8_t uint16_encode(uint16_t value, uint8_t * p_encoded_data)
+{
+    p_encoded_data[0] = (uint8_t) ((value & 0x00FF) >> 0);
+    p_encoded_data[1] = (uint8_t) ((value & 0xFF00) >> 8);
+    return sizeof(uint16_t);
+}
+
+/**@brief Function for decoding a uint16 value.
+ *
+ * @param[in]   p_encoded_data   Buffer where the encoded data is stored.
+ *
+ * @return      Decoded value.
+ */
+uint16_t uint16_decode(const uint8_t * p_encoded_data)
+{
+        return ( (((uint16_t)((uint8_t *)p_encoded_data)[0])) |
+                 (((uint16_t)((uint8_t *)p_encoded_data)[1]) << 8 ));
+}
 
 /**
  * @brief Function for encoding an int32 value in big-endian format.
