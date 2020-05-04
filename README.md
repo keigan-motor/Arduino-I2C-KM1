@@ -1,14 +1,18 @@
+@mainpage
 # Arduino-I2C-KM1
 This library allows an Arduino/Genuino board to control KeiganMotor as slave KM-1 using I2C communication.
 ESP32 or ESP8266 (by Espressif) is also available.
 
-# Documents web site
-- https://document.keigan-motor.com
+## Github
+- https://github.com/keigan-motor/Arduino-I2C-KM1
+
+## Documentation
+- https://docs.keigan-motor.com
 
 ## Requirement
-
-- Arduino UNO / Mega / Mega 2560 or ESP8266 / ESP32 series
+- Arduino UNO / Mega / Mega 2560, ESP8266 / ESP32 series and M5Stack
 - KeiganMotor KM-1 series
+ - Firmware version more than 2.36 required
 
 ## Installation
 
@@ -16,7 +20,7 @@ ESP32 or ESP8266 (by Espressif) is also available.
 
 You can also install it from library manager. Keyword is "keigan".
 
-## Zip
+### Zip
 
     https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
     
@@ -36,35 +40,34 @@ Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PUL
 - between SCL and 3.3V // Default SCL = 22
 
 ***NOTE***
-KeiganMotor uses 3.3V for SDA and SCL lines.
+KeiganMotor uses 3.0V for SDA and SCL lines.
+If you use microcontroller its high voltage level is 5V like Arduino UNO,
+Please use a logic level converter to avoid communication error such as the following. 
+- http://akizukidenshi.com/catalog/g/gM-05452/
 
-##### M5 Stack and Raspberry Pi
-They do not need external pullup resisters because it already has external pullup resisters.
+
+##### M5Stack and Raspberry Pi
+You can connect KeiganMotor to them directly.
+They do not need external pullup resisters because it already has external pullup resisters,
+and the high signal level is 3.3V.
 
 
 ## Basic
 Including the library and initialization are required to control KeiganMotor.
+
 ### Include library
 ```arduino
 #include "KM1_I2C.h"
 ```
 ### Initialize with I2C slave address
 #### The default I2C address of KM-1 is "0x20" 
+This will start I2C communication automatically.
 ```arduino
-KeiganMotor motor(0x20);
+KeiganMotor motor(0x20); // It includes wire.begin();
 ```
 ***NOTE***
 "0xA0" will cause the same result because I2C address is available only for 7bit.
 
-### Start I2C communication
-```arduino
-motor.begin();
-```
-***NOTE***
-This line is not needed from version 1.1.0 because I2C communication is available when initializing KeiganMotor.
-
-## Examples
-### See "examples" folder
 ### Run
 ```arduino
 motor.enable();
@@ -76,11 +79,6 @@ delay(5000);
 motor.stop();
 ```
 
-***NOTE***
-Please use delay(ms) instead of motor.wait(ms).
-The latter can cause restart of KeiganMotor if sending continuously.
-
-
 ### Change I2C Address
 ```arduino
 motor.i2cSlaveAddress(0xB0);
@@ -88,6 +86,23 @@ motor.saveAllRegisters();
 delay(2000);
 motor.reboot();
 ```
+
+## Examples
+### See "examples" folder
+
+|Example  |Desc.  |
+|---|---|
+|Scan.ino  |Scan all I2C devices and identify KeiganMotor|
+|ChangeI2CAddress.ino  |Change I2C slave address  |
+|MoveTo.ino  |Move to absolute position. (Position control)|
+|MoveBy.ino  |Move by distance (move to relative position) (Position control)|
+|ReadMotorMeasurement.ino  |Read Motor Measurement (position, velocity and torque)|
+|Dual.ino  |Run two KeiganMotors at the same time|
+|Reset.ino  |Reset and save all the registers|
+|MotionControl.ino  |Cosine wave position control using timer|
+
+
+
 
 ## Author
 
