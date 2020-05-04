@@ -15,10 +15,8 @@ void print_hexdump(uint8_t *data, uint8_t len)
   }
 }
 
-/*
- ** Convert between float and bytes array
- */ 
 
+// Convert between float and bytes array
 union float_byte_ui32 {
     float fl;
     uint8_t bt[sizeof(float)];

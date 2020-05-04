@@ -1,5 +1,5 @@
-#ifndef COMMAND_LIST_H
-#define COMMAND_LIST_H
+#ifndef DEFINITIONS_H
+#define DEFINITIONS_H
 
 // Registers
 #define CMD_REG_MAX_SPEED 0x02
@@ -128,6 +128,10 @@
 #define CMD_DRIVER_ENABLE 0x51
 #define CMD_DRIVER_ENABLE_LEN 5
 
+/** @name Motor Motion Control
+ * 
+*/
+//@{
 // Motor Motion Control
 #define CMD_ACT_SPEED 0x58
 #define CMD_ACT_SPEED_LEN 9
@@ -188,6 +192,7 @@
 
 #define CMD_ACT_STOP_PLAYBACK_MOTION 0x88
 #define CMD_ACT_STOP_PLAYBACK_MOTION_LEN 5
+//@}
 
 // Queue
 #define CMD_QUE_PAUSE 0x90
@@ -262,6 +267,21 @@
 #define CMD_READ_IMU_MEASUREMENT 0xB5
 #define CMD_READ_IMU_MEASUREMENT_LEN 5
 
+// Read and write Motion (teaching) from master
+#define CMD_DT_READ_MOTION 0xB7
+#define CMD_DT_READ_MOTION_LEN 7
+
+#define CMD_DT_WRITE_MOTION_POSITION 0xB8
+#define CMD_DT_WRITE_MOTION_POSITION_LEN 9
+
+// Button settings
+#define CMD_BUTTON_SETTING 0xBD
+#define CMD_BUTTON_SETTING_LEN 6
+
+// Read the latest error
+#define CMD_READ_ERROR 0xBE
+#define CMD_READ_ERROR_LEN 5
+
 // LED
 #define CMD_LED_SET_LED 0xE0
 #define CMD_LED_SET_LED_LEN 9
@@ -317,4 +337,14 @@
 
 #define DUMMY_DATA_INDICATE_ERROR 0xFF
 
-#endif // COMMAND_LIST_H
+/** @name KeiganMotor::interface() bit flag*/
+#define INTERFACE_BIT_BLE        0x01 //  (0000 0001)
+#define INTERFACE_BIT_LINKAGE    0x02 //  (0000 0010)
+#define INTERFACE_BIT_UART1      0x08 //  (0000 1000)
+#define INTERFACE_BIT_I2C        0x10 //  (0001 0000)
+#define INTERFACE_BIT_DIGITAL_IO 0x20 //  (0010 0000)
+#define INTERFACE_BIT_UART2      0x40 //  (0100 0000)
+#define INTERFACE_BIT_BUTTON     0x80 //  (1000 0000)
+
+
+#endif // DEFINITIONS_H

@@ -71,7 +71,6 @@ void loop() {
   
 #ifdef M5_STACK_USE
   M5.Lcd.setCursor(1, 1);
-  //M5.Lcd.clear();
   M5.Lcd.print("[");
   M5.Lcd.print(addr, HEX);
   M5.Lcd.println("] ");
@@ -89,3 +88,4 @@ void loop() {
 #endif
 
 }
+
