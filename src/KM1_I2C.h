@@ -352,6 +352,7 @@ public:
    bool resetAllRegisters(bool response = false);
    /* @} */
 
+
    /** @name Write register (PID Controller) */
    /* @{ */
    /**
@@ -439,14 +440,33 @@ public:
    bool positionD(float value, bool response = false);
 
    /**
-       @brief Set Position PID controller gain D
-       @param[in] value    Position PID controller gain D (differential).
+       @brief Set the threshold [radian] to determine Position PID control available range
+       @details Position PID control is available within the range determined by this threshold, @n
+       while only Position P control is available out of the range. @n
+       The conditions are as follows. @n
+       @code
+       if(|currentPosition - targetPosition| < threshold) // do PID control.
+       else {// do P control}
+       @endcode 
+       @note Position integral and differential gains are ignored out of the range.If you want to always do PID control, @n
+       set the this value large enough.     
+       @param[in] value        the threshold to determine the available range of PID control. [radian]
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
        @retval false           got an error
-       @remark Position integral and differential term are ignored out of positionIDThreshold range. (See positionIDThreshold function)
     */
    bool positionIDThreshold(float value, bool response = false);
+
+   /**
+       @brief Set the threshold [degree] to determine Position PID control available range
+       @details See KeiganMotor::positionIDThreshold.   
+       @param[in] value        The threshold determines the available area of PID control. [degree]
+       @param[in] response     true if you get response after sending command, default: false
+       @retval true            received response from KeiganMotor successfully
+       @retval false           got an error
+    */
+   bool positionIDThresholdDegree(float value, bool response = false);
+
 
    /**
        @brief Reset all the PID parameters to default
@@ -457,6 +477,7 @@ public:
     */
    bool resetPID(bool response = false);
    /* @} */
+
 
    /** @name Read data*/
    /* @{ */
@@ -479,6 +500,37 @@ public:
    status_t readStatus(void);
 
    /**
+     * @brief Read the maximum speed
+     * @return float max speed [radian/second]
+     */
+   float readMaxSpeed(void);   
+
+   /**
+     * @brief Read the minimum speed
+     * @return float min speed [radian/second]
+     */
+   float readMinSpeed(void); 
+
+
+   /**
+     * @brief Read the curveType fo motion control
+     * @return curveType
+     */
+   CurveType readCurveType(void);   
+
+   /**
+     * @brief Read the acceleration value
+     * @return float acceleration [radian/second^2]
+     */
+   float readAcc(void);   
+
+   /**
+     * @brief Read the deceleration value
+     * @return float deceleration [radian/second^2]
+     */
+   float readDec(void);   
+
+   /**
      * @brief Read the resister value of max torque (limitation)
      * @return float max torque [N*m]
      * @details You can do torque control during velocity or position control 
@@ -488,12 +540,9 @@ public:
    /**
        @brief Read motor measurement data
        @details Position, velocity and torque values are available from property after sending this command. @n
-       In addition to it, you can get degree and rpm values as property of KeiganMotor. 
-       @param[in] isAuto       true if no write command needed. Default:false. Please see the note as below.
+       In addition to it, you can get degree and rpm values as property of KeiganMotor. .
        @retval true            received data from KeiganMotor successfully
        @retval false           got an error
-       @note Setting argument isAuto true enables high frequency motion control by omitting write command. @n
-       But please make sure to call response(false) and startMotorMeasurement() in advance to reflect automatic update of motor measurement.
        @code 
            if(m.readMotorMeasurement()){
                Serial.print(degree: );
@@ -503,7 +552,7 @@ public:
            }
        @endcode
     */
-   bool readMotorMeasurement(bool isAuto=false);
+   bool readMotorMeasurement(void);
 
    /**
        @brief Read IMU measurement data
@@ -545,6 +594,78 @@ public:
    error_t readError(void);
    /* @} */
 
+   /** @name Read PID controller parameters*/
+   /* @{ */
+   /**
+     * @brief Read the resister value of Current PID controller P gain
+     * @return float gain
+     */
+   float readQCurrentP(void);
+
+   /**
+     * @brief Read the resister value of Current PID controller I gain
+     * @return float gain
+     */
+   float readQCurrentI(void);
+
+   /**
+     * @brief Read the resister value of Current PID controller D gain
+     * @return float gain
+     */
+   float readQCurrentD(void);
+
+
+   /**
+     * @brief Read the resister value of Speed PID controller P gain
+     * @return float gain
+     */
+   float readSpeedP(void);
+
+   /**
+     * @brief Read the resister value of Speed PID controller I gain
+     * @return float gain
+     */
+   float readSpeedI(void);
+
+   /**
+     * @brief Read the resister value of Speed PID controller D gain
+     * @return float gain
+     */
+   float readSpeedD(void);
+
+
+   /**
+     * @brief Read the resister value of Position PID controller P gain
+     * @return float gain
+     */
+   float readPositionP(void);
+
+   /**
+     * @brief Read the resister value of Position PID controller I gain
+     * @return float gain
+     */
+   float readPositionI(void);
+
+   /**
+     * @brief Read the resister value of Position PID controller D gain
+     * @return float gain
+     */
+   float readPositionD(void);
+
+   /**
+     * @brief Read the threshold [radian] to determine Position PID control available range
+     * @return float threshold [radian]
+     */
+   float readPositionIDThreshold(void);
+
+   /**
+     * @brief Read the threshold [degree] to determine Position PID control available range
+     * @return float threshold [degree]
+     */
+   float readPositionIDThresholdDegree(void);
+
+   /* @} */
+
    /** @name Enable or Disable motor action */
    /* @{ */
    /**
@@ -576,7 +697,7 @@ public:
    bool maxSpeed(float value, bool response = false);
 
    /**
-       @brief Set min speed function. It is used in case of "prepare playback motion"
+       @brief Set min speed. It is used in case of "prepare playback motion"
        @param[in] value        float speed to set [radian/second] 
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
@@ -585,16 +706,16 @@ public:
    bool minSpeed(float value, bool response = false); //TODO // Set min speed [rad/s]
 
    /**
-       @brief Set curve type function for motion control.
+       @brief Set curve type for motion control. See curveType
        @param[in] type         CurveType to set  
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
        @retval false           got an error
     */
-   bool curveType(CurveType type, bool response = false); // Set motion control curve type 0:None, 1:Trapezoid
+   bool curveType(CurveType type, bool response = false); 
 
    /**
-       @brief Set acceleration function. It is ignored when curve type is 0(CURVETYPE_NONE).
+       @brief Set acceleration value. It is ignored when curve type is 0(CURVETYPE_NONE).
        @param[in] value        float acceleration to set [radian/second^2] 
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
@@ -603,7 +724,7 @@ public:
    bool acc(float value, bool response = false); // Set acceleration [rad/s^2]
 
    /**
-       @brief Set deceleration function. It is ignored when curve type is 0(CURVETYPE_NONE).
+       @brief Set deceleration value. It is ignored when curve type is 0(CURVETYPE_NONE).
        @param[in] value        float deceleration to set [radian/second^2] 
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
@@ -612,7 +733,7 @@ public:
    bool dec(float value, bool response = false); // Set deceleration [rad/s^2]
 
    /**
-       @brief Set Max torque function to limit current not to be above the torque.
+       @brief Set Max torque value to limit current not to be above the torque.
        @param[in] value        float max torque to set [N*m] 
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully

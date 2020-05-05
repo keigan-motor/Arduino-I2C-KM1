@@ -6,12 +6,9 @@ void print_hexdump(uint8_t *data, uint8_t len)
 
   for (int i = 0; i < len; i++)
   {
-    Serial.print("0x");
     Serial.print(data[i], HEX);
     if (i == len - 1)
       Serial.println("");
-    else
-      Serial.print(",");
   }
 }
 

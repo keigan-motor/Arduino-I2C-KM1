@@ -218,21 +218,18 @@ status_t KeiganMotor::readStatus(void)
   return status;
 }
 
-bool KeiganMotor::readMotorMeasurement(bool isAuto = false)
+bool KeiganMotor::readMotorMeasurement(void)
 {
-  if (!isAuto)
-  {
-    tx_buf[0] = CMD_READ_MOTOR_MEASUREMENT;
-    appendID(&tx_buf[1]);
-    uint8_t len = CMD_READ_MOTOR_MEASUREMENT_LEN;
+  tx_buf[0] = CMD_READ_MOTOR_MEASUREMENT;
+  appendID(&tx_buf[1]);
+  uint8_t len = CMD_READ_MOTOR_MEASUREMENT_LEN;
 
-    append_crc16(tx_buf, len - 2);
-    Wire.beginTransmission(_address);
-    Wire.write(tx_buf, len);
-    Wire.endTransmission(true);
+  append_crc16(tx_buf, len - 2);
+  Wire.beginTransmission(_address);
+  Wire.write(tx_buf, len);
+  Wire.endTransmission(true);
 
-    delay(I2C_READ_DELAY_MS);
-  }
+  delay(I2C_READ_DELAY_MS);
 
   Wire.requestFrom((int)_address, max(RECV_DATA_MOTOR_MEAS_LEN, RECV_DATA_ERROR_LEN));
 
@@ -245,10 +242,12 @@ bool KeiganMotor::readMotorMeasurement(bool isAuto = false)
   }
 
   measurement = {false, 0, 0, 0};
-  print_hexdump(rx_buf, cnt);
+  //print_hexdump(rx_buf, cnt);
 
-  if (rx_buf[1] == RECV_DATA_MOTOR_MEAS){
-    if(crc16(rx_buf, RECV_DATA_MOTOR_MEAS_LEN) == 0){
+  if (rx_buf[1] == RECV_DATA_MOTOR_MEAS)
+  {
+    if (crc16(rx_buf, RECV_DATA_MOTOR_MEAS_LEN) == 0)
+    {
       measurement.isValid = true;
       measurement.position = float_big_decode(&rx_buf[2]);
       measurement.velocity = float_big_decode(&rx_buf[6]);
@@ -261,7 +260,9 @@ bool KeiganMotor::readMotorMeasurement(bool isAuto = false)
       rpm = RADPERSEC_TO_RPM(velocity);
 
       return true;
-    } else {
+    }
+    else
+    {
       measurement.isValid = true;
       measurement.position = float_big_decode(&rx_buf[2]);
       measurement.velocity = float_big_decode(&rx_buf[6]);
@@ -270,26 +271,31 @@ bool KeiganMotor::readMotorMeasurement(bool isAuto = false)
       error.id = 0xFF;
       error.code = ERROR_CODE_CRC_INVALID;
       error.info = 0xFF;
-      Serial.print("RECV_DATA_MOTOR_MEAS: ");
-      return true;
+      //Serial.print("RECV_DATA_MOTOR_MEAS: ");
       //print_hexdump(rx_buf, cnt);
     }
-
-  } else if (rx_buf[1] == RECV_DATA_ERROR){
-    if(crc16(rx_buf, RECV_DATA_ERROR_LEN) == 0){
+  }
+  else if (rx_buf[1] == RECV_DATA_ERROR)
+  {
+    if (crc16(rx_buf, RECV_DATA_ERROR_LEN) == 0)
+    {
       error.cmd = rx_buf[4];
       error.id = uint16_big_decode(&rx_buf[2]);
       error.code = uint32_big_decode(&rx_buf[5]);
-      error.info = uint32_big_decode(&rx_buf[9]);      
-    } else {
+      error.info = uint32_big_decode(&rx_buf[9]);
+    }
+    else
+    {
       error.cmd = 0xFF;
       error.id = 0xFF;
       error.code = ERROR_CODE_CRC_INVALID;
       error.info = 0xFF;
-      Serial.print("RECV_DATA_ERROR: ");
+      //Serial.print("RECV_DATA_ERROR: ");
       //print_hexdump(rx_buf, cnt);
     }
-  } else {
+  }
+  else
+  {
     error.code = ERROR_CODE_INVALID_DATA;
   }
 
@@ -479,6 +485,11 @@ bool KeiganMotor::positionIDThreshold(float value, bool response = false)
   return writeFloat(CMD_REG_POS_ID_THRESHOLD, value, response);
 }
 
+bool KeiganMotor::positionIDThresholdDegree(float value, bool response = false)
+{
+  return positionIDThreshold(DEGREES_TO_RADIANS(value), response);
+}
+
 bool KeiganMotor::resetPID(bool response = false)
 {
   return write(CMD_REG_RESET_PID, NULL, 0, response);
@@ -557,11 +568,90 @@ bool KeiganMotor::readDeviceName(char *name)
 error_t KeiganMotor::readError(void)
 {
   write(CMD_READ_ERROR, NULL, 0, true);
+  return error;
+}
+
+float KeiganMotor::readMaxSpeed(void)
+{
+  return readFloat(CMD_REG_MAX_SPEED);
+}
+float KeiganMotor::readMinSpeed(void)
+{
+  return readFloat(CMD_REG_MIN_SPEED);
+}
+CurveType KeiganMotor::readCurveType(void)
+{
+  return readByte(CMD_REG_CURVE_TYPE);
+}
+
+float KeiganMotor::readAcc(void)
+{
+  return readFloat(CMD_REG_ACC);
+}
+
+float KeiganMotor::readDec(void)
+{
+  return readFloat(CMD_REG_DEC);
 }
 
 float KeiganMotor::readMaxTorque(void)
 {
   return readFloat(CMD_REG_MAX_TORQUE);
+}
+
+float KeiganMotor::readQCurrentP(void)
+{
+  return readFloat(CMD_REG_Q_CURRENT_P);
+}
+
+float KeiganMotor::readQCurrentI(void)
+{
+  return readFloat(CMD_REG_Q_CURRENT_I);
+}
+
+float KeiganMotor::readQCurrentD(void)
+{
+  return readFloat(CMD_REG_Q_CURRENT_D);
+}
+
+float KeiganMotor::readSpeedP(void)
+{
+  return readFloat(CMD_REG_SPEED_P);
+}
+
+float KeiganMotor::readSpeedI(void)
+{
+  return readFloat(CMD_REG_SPEED_I);
+}
+
+float KeiganMotor::readSpeedD(void)
+{
+  return readFloat(CMD_REG_SPEED_D);
+}
+
+float KeiganMotor::readPositionP(void)
+{
+  return readFloat(CMD_REG_POSITION_P);
+}
+
+float KeiganMotor::readPositionI(void)
+{
+  return readFloat(CMD_REG_POSITION_I);
+}
+
+float KeiganMotor::readPositionD(void)
+{
+  return readFloat(CMD_REG_POSITION_D);
+}
+
+float KeiganMotor::readPositionIDThreshold(void)
+{
+  return readFloat(CMD_REG_POS_ID_THRESHOLD);
+}
+
+float KeiganMotor::readPositionIDThresholdDegree(void)
+{
+  return RADIANS_TO_DEGREES(readPositionIDThreshold());
 }
 
 bool KeiganMotor::enable(bool response = false)
