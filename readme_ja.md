@@ -49,6 +49,7 @@ Arduino UNO のような 5V 動作のマイコンから駆動する場合は、K
 通信エラーを低減するため、ロジックレベル変換を行って下さい。以下のようなものをお勧めします。
 - http://akizukidenshi.com/catalog/g/gM-05452/
     - 本モジュール（PCA9306）と Arduino を用いた接続は、以下のようになります。
+    
 |PCA9306|Arduino UNO|KeiganMotor_I2C|
 |---|---|---|
 |VREF1|5V     |-  |

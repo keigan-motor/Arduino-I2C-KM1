@@ -51,6 +51,7 @@ If you use microcontroller its high voltage level is 5V like Arduino UNO,
 Please use a logic level converter to protect KeiganMotor and avoid communication error such as the following. 
 - http://akizukidenshi.com/catalog/g/gM-05452/
     - Connection using this module (PCA9306) is as follows.
+    
 |PCA9306|Arduino UNO|KeiganMotor_I2C|
 |---|---|---|
 |VREF1|5V     |-  |
