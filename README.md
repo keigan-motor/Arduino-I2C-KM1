@@ -3,6 +3,8 @@
 This library allows an Arduino/Genuino board to control KeiganMotor as slave KM-1 using I2C communication.
 ESP32 or ESP8266 (by Espressif) is also available.
 
+- 日本語版の説明はこちら @ref readme_ja.md
+
 ## Github
 - https://github.com/keigan-motor/Arduino-I2C-KM1
 
@@ -25,32 +27,56 @@ You can also install it from library manager. Keyword is "keigan".
     https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
     
 ## Physical Connection
+<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/ver2/img/arduino_connection.jpg?raw=true" width="600">
+
 Please refer to the following page.
 - Japanese: https://document.keigan-motor.com/software_dev/ports_on_wire
 
-Communication speed should be 100kHz or 400kHz.
+Harness option to use header pin from KeiganMotor I2C port
+- https://keiganmotor.myshopify.com/products/i2c
+
 
 ***NOTE***
 Please refer to the following about pull-up resister.
 
 
 #### Pullup resisters
-Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PULLUP is not recommended.)
+Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PULLUP is not recommended but may work well especially for Arduino UNO.)
 - between SDA and 3.3V // Default SDA = 21
 - between SCL and 3.3V // Default SCL = 22
 
 ***NOTE***
 KeiganMotor uses 3.0V for SDA and SCL lines.
 If you use microcontroller its high voltage level is 5V like Arduino UNO,
-Please use a logic level converter to avoid communication error such as the following. 
+Please use a logic level converter to protect KeiganMotor and avoid communication error such as the following. 
 - http://akizukidenshi.com/catalog/g/gM-05452/
+    - Connection using this module (PCA9306) is as follows.
+|PCA9306|Arduino UNO|KeiganMotor_I2C|
+|---|---|---|
+|VREF1|5V     |-  |
+|SDA1 |SDA(21)|-  |
+|SCL1 |SCL(22)|-  |
+|VREF2|3.3V   |-  |
+|SDA2 |-      |SDA|
+|SCL2 |-      |SCL|
+|GND  |GND    |GND|    
 
+##### M5Stack
+You can connect KeiganMotor to it directly.
+No need external pullup resisters because it already has external pullup resisters,
+and the logic signal level is 3.3V.
+（Normal ESP32 and ESP8266 need external pullups)
 
-##### M5Stack and Raspberry Pi
-You can connect KeiganMotor to them directly.
-They do not need external pullup resisters because it already has external pullup resisters,
-and the high signal level is 3.3V.
+<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/ver2/img/M5Stack_connection.jpg?raw=true" width="600">
 
+|M5Stack |KeiganMotor_I2C|
+|---|---|
+|SDA(21)|SDA|
+|SCL(22)|SCL|
+|GND|GND|
+
+***NOTE***
+No need to connect 5V pin of KeiganMotor I2C port.
 
 ## Basic
 Including the library and initialization are required to control KeiganMotor.
@@ -96,11 +122,12 @@ motor.reboot();
 |ChangeI2CAddress.ino  |Change I2C slave address  |
 |MoveTo.ino  |Move to absolute position. (Position control)|
 |MoveBy.ino  |Move by distance (move to relative position) (Position control)|
+|Torque.ino  |Max Torque and position control example|
 |ReadMotorMeasurement.ino  |Read Motor Measurement (position, velocity and torque)|
 |Dual.ino  |Run two KeiganMotors at the same time|
 |Reset.ino  |Reset and save all the registers|
-|MotionControl.ino  |Cosine wave position control using timer|
-
+|Wave.ino  |Cosine wave position control using timer|
+|PID.ino  |Read the PID parameters|
 
 
 
