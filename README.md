@@ -9,6 +9,7 @@ ESP32 or ESP8266 (by Espressif) is also available.
 - https://github.com/keigan-motor/Arduino-I2C-KM1
 
 ## Documentation
+- https://docs.keigan-motor.com/apiDocument/Arduino-I2C-KM1/
 - https://docs.keigan-motor.com
 
 ## Requirement

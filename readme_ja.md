@@ -7,6 +7,7 @@ ESP32 または ESP8266 (Espressif 社) からも使用可能です.
 - https://github.com/keigan-motor/Arduino-I2C-KM1
 
 ## ドキュメント
+- https://docs.keigan-motor.com/apiDocument/Arduino-I2C-KM1/readme_ja_8md.html
 - https://docs.keigan-motor.com
 
 ## 必要条件
