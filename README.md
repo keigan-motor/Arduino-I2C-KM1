@@ -3,7 +3,7 @@
 This library allows an Arduino/Genuino board to control KeiganMotor as slave KM-1 using I2C communication.
 ESP32 or ESP8266 (by Espressif) is also available.
 
-- 日本語版の説明はこちら @ref readme_ja.md
+- [日本語版の説明はこちら](readme_ja.md)
 
 ## Github
 - https://github.com/keigan-motor/Arduino-I2C-KM1
@@ -51,7 +51,7 @@ If you use microcontroller its high voltage level is 5V like Arduino UNO,
 Please use a logic level converter to protect KeiganMotor and avoid communication error such as the following. 
 - http://akizukidenshi.com/catalog/g/gM-05452/
     - Connection using this module (PCA9306) is as follows.
-    
+
 |PCA9306|Arduino UNO|KeiganMotor_I2C|
 |---|---|---|
 |VREF1|5V     |-  |
