@@ -3,8 +3,6 @@
 Arduino/Genuino ボードから KeiganMotor を I2C 通信でコントロールするためのライブラリです。
 ESP32 または ESP8266 (Espressif 社) からも使用可能です.
 
-- 英語版の説明はこちら -> @ref index
-
 ## Github
 - https://github.com/keigan-motor/Arduino-I2C-KM1
 
@@ -27,6 +25,8 @@ ESP32 または ESP8266 (Espressif 社) からも使用可能です.
     https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
     
 ## 接続方法
+<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/ver2/img/arduino_connection.jpg?raw=true" width="600">
+
 KeiganMotor の I2C ポートの場所については、下記ページを参照下さい。
 - https://document.keigan-motor.com/software_dev/ports_on_wire
 
@@ -66,7 +66,8 @@ KeiganMotor を直接接続可能です。
 外部プルアップ抵抗が予め実装されており、ロジックレベルが 3.3Vであるためです。
 （通常の ESP32, ESP8266 では、外部プルアップ抵抗が必要です）
 
-- 接続は以下のようになります。
+<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/ver2/img/M5Stack_connection.jpg?raw=true" width="600">
+
 |M5Stack |KeiganMotor_I2C|
 |---|---|
 |SDA(21)|SDA|
