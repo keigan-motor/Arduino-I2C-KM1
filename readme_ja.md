@@ -26,8 +26,6 @@ ESP32 または ESP8266 (Espressif 社) からも使用可能です.
     https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
     
 ## 接続方法
-<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/ver2/img/arduino_connection.jpg?raw=true" width="600">
-
 KeiganMotor の I2C ポートの場所については、下記ページを参照下さい。
 - https://document.keigan-motor.com/software_dev/ports_on_wire
 
@@ -48,19 +46,9 @@ KeiganMotor のI2Cポートからヘッダーピンを使用するハーネス�
 KeiganMotor は、通信ラインに 3.0V を使用しています。
 Arduino UNO のような 5V 動作のマイコンから駆動する場合は、KeiganMotor のマイコンを保護し、
 通信エラーを低減するため、ロジックレベル変換を行って下さい。以下のようなものをお勧めします。
-- http://akizukidenshi.com/catalog/g/gM-05452/
-    - 本モジュール（PCA9306）と Arduino を用いた接続は、以下のようになります。
+- https://www.switch-science.com/catalog/1523/
 
-|PCA9306|Arduino UNO|KeiganMotor_I2C|
-|---|---|---|
-|VREF1|5V     |-  |
-|SDA1 |SDA(21)|-  |
-|SCL1 |SCL(22)|-  |
-|VREF2|3.3V   |-  |
-|SDA2 |-      |SDA|
-|SCL2 |-      |SCL|
-|GND  |GND    |GND|
-
+※ 後日更新予定です。お困りの場合はホームページよりお問い合わせ下さい。
 
 #### M5Stack
 KeiganMotor を直接接続可能です。

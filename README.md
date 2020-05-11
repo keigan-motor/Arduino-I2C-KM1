@@ -28,8 +28,6 @@ You can also install it from library manager. Keyword is "keigan".
     https://github.com/keigan-motor/Arduino-I2C-KM1/archive/master.zip
     
 ## Physical Connection
-<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/ver2/img/arduino_connection.jpg?raw=true" width="600">
-
 Please refer to the following page.
 - Japanese: https://document.keigan-motor.com/software_dev/ports_on_wire
 
@@ -50,18 +48,8 @@ Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PUL
 KeiganMotor uses 3.0V for SDA and SCL lines.
 If you use microcontroller its high voltage level is 5V like Arduino UNO,
 Please use a logic level converter to protect KeiganMotor and avoid communication error such as the following. 
-- http://akizukidenshi.com/catalog/g/gM-05452/
-    - Connection using this module (PCA9306) is as follows.
+- https://www.switch-science.com/catalog/1523/
 
-|PCA9306|Arduino UNO|KeiganMotor_I2C|
-|---|---|---|
-|VREF1|5V     |-  |
-|SDA1 |SDA(21)|-  |
-|SCL1 |SCL(22)|-  |
-|VREF2|3.3V   |-  |
-|SDA2 |-      |SDA|
-|SCL2 |-      |SCL|
-|GND  |GND    |GND|    
 
 ##### M5Stack
 You can connect KeiganMotor to it directly.
