@@ -48,6 +48,16 @@ Arduino UNO のような 5V 動作のマイコンから駆動する場合は、K
 通信エラーを低減するため、ロジックレベル変換を行って下さい。以下のようなものをお勧めします。
 - https://www.switch-science.com/catalog/1523/
 
+|Level shifter |Arduino UNO|KeiganMotor_I2C|
+|---|---|---|
+|HV|5V     |-  |
+|HV1 |SDA(21)|-  |
+|HV2 |SCL(22)|-  |
+|LV|3.3V   |-  |
+|LV1 |-      |SDA|
+|LV2 |-      |SCL|
+|GND  |GND    |GND| 
+
 ※ 後日更新予定です。お困りの場合はホームページよりお問い合わせ下さい。
 
 #### M5Stack

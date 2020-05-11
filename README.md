@@ -50,6 +50,15 @@ If you use microcontroller its high voltage level is 5V like Arduino UNO,
 Please use a logic level converter to protect KeiganMotor and avoid communication error such as the following. 
 - https://www.switch-science.com/catalog/1523/
 
+|Level shifter |Arduino UNO|KeiganMotor_I2C|
+|---|---|---|
+|HV|5V     |-  |
+|HV1 |SDA(21)|-  |
+|HV2 |SCL(22)|-  |
+|LV|3.3V   |-  |
+|LV1 |-      |SDA|
+|LV2 |-      |SCL|
+|GND  |GND    |GND| 
 
 ##### M5Stack
 You can connect KeiganMotor to it directly.
