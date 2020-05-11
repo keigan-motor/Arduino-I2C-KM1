@@ -7,8 +7,8 @@
 #define PI (3.14159265358979f) // π: def. of PI
 #define RPM_TO_RADPERSEC(rpm) ((float)(rpm)*2 * (PI) / 60)
 #define RPM_TO_RADPERMILLIS(rpm) ((float)(rpm)*2 * (PI) / 60 / 1000)
-#define RADPERSEC_TO_RPM(rps) ((float)(rps)*360 / (2 * (PI)))
-#define RADPERMILLIS_TO_RPM(rpms) ((float)(rpms)*1000 * 360 / (2 * (PI)))
+#define RADPERSEC_TO_RPM(rps) ((float)(rps)*60 / (2 * (PI)))
+#define RADPERMILLIS_TO_RPM(rpms) ((float)(rpms)*1000 * 60 / (2 * (PI)))
 #define DEGREES_TO_RADIANS(deg) ((float)(deg) * (PI) / 180)
 #define RADIANS_TO_DEGREES(rad) ((float)(rad)*180 / (PI))
 
