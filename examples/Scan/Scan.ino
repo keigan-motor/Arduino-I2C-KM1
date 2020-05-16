@@ -9,7 +9,7 @@
 
 #include "KM1_I2C.h"
 #include <Wire.h>
- 
+//#include <M5Stack.h> // Please comment in if using M5Stack
  
 void setup()
 {
@@ -31,12 +31,15 @@ void loop()
   nDevices = 0;
   for(address = 1; address < 127; address++ ) 
   {
+#ifdef _M5STACK_H_
+    if(address == 0x75) return; // This avoids hang-up because M5Stack is equipped with IP5306 IC. If you cannot over-write a program, please long-press power switch before compile and release it after a few seconds from starting write. 
+#endif
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
     // a device did acknowledge to the address.
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
- 
+     
     if (error == 0)
     {
       Serial.print("I2C device found at address 0x");
@@ -71,5 +74,5 @@ void loop()
   else
     Serial.println("done\n");
  
-  delay(5000);           // wait 5 seconds for next scan
+  delay(3000);           // wait 3 seconds for next scan
 }

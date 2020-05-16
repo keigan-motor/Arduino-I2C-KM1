@@ -21,52 +21,6 @@
 #define LIBRARY_VERSION 2.0.0
 
 /**
-   @brief Motor Control Mode. This value is automatically changed by write command.
-   @details For example, call KeiganMotor::runForward() function to transit to MOTOR_CONTROL_MODE_VELOCITY.
-*/
-enum ControlMode
-{
-   MOTOR_CONTROL_MODE_NONE = 0,  /**< idle mode (No action)*/
-   MOTOR_CONTROL_MODE_VELOCITY = 1, /**< Velocity Control */
-   MOTOR_CONTROL_MODE_POSITION = 2, /**< Position Control */
-   MOTOR_CONTROL_MODE_TORQUE = 3, /**< Torque Control */
-};
-
-/**
-   @brief Safe run option
-   @details Motor action in case KeiganMotor cannot receive next action command. See KeiganMotor::safeRun().
-*/
-enum SafeRunOption
-{
-   SAFE_RUN_TIMEOUT_FREE = 0,    /**< free 非励磁状態 */
-   SAFE_RUN_TIMEOUT_DISABLE = 1, /**< disable 動作不許可状態 */
-   SAFE_RUN_TIMEOUT_STOP = 2,    /**< run_at_velocity(0)  速度制御ゼロ */
-   SAFE_RUN_TIMEOUT_POS_FIX = 3  /**< fix position at the point その場で位置制御*/
-};
-
-/**
-   @enum LedState
-   @brief Led State of KeiganMotor
-*/
-enum LedState
-{
-   LED_STATE_OFF = 0,      /**< off 消灯 */
-   LED_STATE_ON_SOLID = 1, /**< on solid 点灯 */
-   LED_STATE_ON_FLASH = 2  /**< on flashing 点滅 */
-};
-
-/**
-   @enum CurveType
-   @brief Curve type for motion control. See KeiganMotor::curveType().
-   @remark Set value 0 when sending run or move command continously in short period.
-*/
-enum CurveType
-{
-   CURVETYPE_NONE = 0,     /**< No curve (Cyclic) */
-   CURVETYPE_TRAPEZOID = 1 /**< Trapezoidal curve */
-};
-
-/**
    error_t
    @brief Error or success information received from KeiganMotor
 */
@@ -121,6 +75,26 @@ typedef struct
 /**
    status_t
    @brief Status of KeiganMotor
+   @details flash state is as follows. 
+   @see
+   uint8_t flashState:
+      - #FLASH_STATE_READY 0: ready, not busy (準備OK、ビジーでない、アイドル状態)
+      - #FLASH_STATE_TEACHING_PREPARE 1: preparing for teaching motion (ティーチング準備中)
+      - #FLASH_STATE_TEACHING_DOING 2: teaching motion (ティーチング実行中)
+      - #FLASH_STATE_PLAYBACK_PREPARE 3: preparing for playback motion (プレイバック準備中)
+      - #FLASH_STATE_PLAYBACK_DOING 4: executing playback motion (プレイバック実行中)
+      - #FLASH_STATE_PLAYBACK_PAUSING 5: pausing playback motion (プレイバック一時停止中)
+      - #FLASH_STATE_TASKSET_RECORDING 6: recording taskset (タスクセット記録中)
+      - #FLASH_STATE_TASKSET_DOING 7: doing taskset (タスクセット実行中)
+      - #FLASH_STATE_TASKSET_PAUSING 8: pausing taskset (タスクセット一時停止)
+      - #FLASH_STATE_IMU 20: using IMU (shared resource with the flash) (IMU使用中, フラッシュと共通リソース)　@n
+   @see
+   uint8_t motorControlMode:
+      - #MOTOR_CONTROL_MODE_NONE = 0: idle mode (アイドル状態、非動作中)
+      - #MOTOR_CONTROL_MODE_VELOCITY = 1: Velocity Control（速度制御）
+      - #MOTOR_CONTROL_MODE_POSITION = 2: Position Control（位置制御）
+      - #MOTOR_CONTROL_MODE_TORQUE = 3: Torque Control（トルク制御）
+   
 */
 typedef struct
 {
@@ -130,8 +104,8 @@ typedef struct
    bool isMotorMeasNotifyEnabled; /**< motor measurement notification enabled (always false when using I2C) */
    bool isIMUMeasNotifyEnabled;   /**< IMU measurement notification enabled (always false when using I2C) */
    bool isCheckSumEnabled;        /**< true when KeiganMotor validates CRC16(Checksum) */
-   uint8_t flashState;
-   ControlMode motorControlMode;
+   uint8_t flashState;            /**< flash state. See above.*/
+   uint8_t motorControlMode;      /**< motor control mode. See above */
 
 } status_t;
 
@@ -240,14 +214,15 @@ public:
         Physical 3 buttons: enabled, I2C: disabled, USB: enabled and BLE: disabled. @n
         To save this setting to the flash memory, ensure you call saveAllRegisters(). @n
        @param[in] flag         uint8_t value consists of the following bit flag.
-        - bit7: Physical 3 buttons
-        - bit6: UART2 (Wired)
-        - bit5: DigitalIO (Wired) 
-        - bit4: I2C (Wired)
-        - bit3: UART1 (USB)
+        - bit0: #INTERFACE_BIT_BLE: Bluetooth Low Energy (Wireless)  
+        - bit1: #INTERFACE_BIT_LINKAGE: Linkage (Wireless)
         - bit2: -
-        - bit1: Linkage (Wireless)
-        - bit0: BLE (Wireless)       
+        - bit3: #INTERFACE_BIT_UART1: UART1 (USB)
+        - bit4: #INTERFACE_BIT_I2C: I2C (Wired)
+        - bit5: #INTERFACE_BIT_DIGITAL_IO: DigitalIO (Wired) 
+        - bit6: #INTERFACE_BIT_UART2: UART2 (Wired)
+        - bit7: #INTERFACE_BIT_BUTTON: Physical buttons
+
        @param[in] response     true if you get response after sending command, default: false
        @code
          // Enable I2C and disable both of BLE and USB
@@ -293,11 +268,15 @@ public:
        @param[in] isEnabled    true if you want KeiganMotor stop automatically 
        @param[in] timeout      timeout [millisecond]
        @param[in] op           SafeRunOption (stop behaviour in case of timeout)
+       @see #SAFE_RUN_TIMEOUT_FREE = 0 @n
+            #SAFE_RUN_TIMEOUT_DISABLE = 1 @n
+            #SAFE_RUN_TIMEOUT_STOP = 2 @n
+            #SAFE_RUN_TIMEOUT_POS_FIX = 3 @n
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
        @retval false           got an error
     */
-   bool safeRun(bool isEnabled, uint32_t timeout, SafeRunOption op, bool response = false);
+   bool safeRun(bool isEnabled, uint32_t timeout, uint8_t op, bool response = false);
 
    /**
        @brief Set motor measurement interval
@@ -513,10 +492,12 @@ public:
 
 
    /**
-     * @brief Read the curveType fo motion control
-     * @return curveType
+     * @brief Read the curveType fo motion control. @n See #CURVE_TYPE_NONE and #CURVE_TYPE_TRAPEZOID.
+     * @return curveType @n 
+     *   - #CURVE_TYPE_NONE = 0: No curve. It's cyclic and step function.
+         - #CURVE_TYPE_TRAPEZOID = 1: Trapezoidal velocity curve. 
      */
-   CurveType readCurveType(void);   
+   uint8_t readCurveType(void);   
 
    /**
      * @brief Read the acceleration value
@@ -706,13 +687,15 @@ public:
    bool minSpeed(float value, bool response = false); //TODO // Set min speed [rad/s]
 
    /**
-       @brief Set curve type for motion control. See curveType
-       @param[in] type         CurveType to set  
+       @brief Set curve type for motion control. 
+       @param[in] type         CurveType to set @n 
+     *      - #CURVE_TYPE_NONE = 0: No curve. It's cyclic and step function.
+            - #CURVE_TYPE_TRAPEZOID = 1: Trapezoidal velocity curve.  
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
        @retval false           got an error
     */
-   bool curveType(CurveType type, bool response = false); 
+   bool curveType(uint8_t type, bool response = false); 
 
    /**
        @brief Set acceleration value. It is ignored when curve type is 0(CURVETYPE_NONE).
@@ -980,15 +963,18 @@ public:
    /* @{ */  
    /**
        @brief Set LED lit
-       @param[in] state        LedState
-       @param[in] r            Red brightness
-       @param[in] g            Green brightness       
-       @param[in] b            Blue brightness
+       @param[in] state        LedState @n
+         - #LED_STATE_OFF = 0: off 消灯 
+         - #LED_STATE_ON_SOLID = 1: on solid 点灯 
+         - #LED_STATE_ON_FLASH = 2: on flashing 点滅
+       @param[in] r            Red brightness (0-255)
+       @param[in] g            Green brightness (0-255)       
+       @param[in] b            Blue brightness (0-255)
        @param[in] response     true if you get response after sending command, default: false
        @retval true            received response from KeiganMotor successfully
        @retval false           got an error
     */
-   bool led(LedState state, uint8_t r, uint8_t g, uint8_t b, bool response = false);
+   bool led(uint8_t state, uint8_t r, uint8_t g, uint8_t b, bool response = false);
    /* @} */
 
    /** @name private */

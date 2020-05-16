@@ -1,7 +1,71 @@
+/**
+   @file         Definitions.h
+   @brief        Defines for KeiganMotor  
+   @date         2020/5/1
+   @author       Takashi Tokuda (Keigan Inc.)                
+*/
+
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-// Registers
+/** @name Curve Type
+ * 
+*/
+/* @{ */
+#define CURVE_TYPE_NONE 0 /**< No curve. It's cyclic and step function. */
+#define CURVE_TYPE_TRAPEZOID 1 /**< Trapezoidal velocity curve.  */
+/* @} */
+
+/** @name Interface bit flag */
+/* @{ */
+#define INTERFACE_BIT_BLE        0x01 //  (0000 0001) Bluetooth Low Energy
+#define INTERFACE_BIT_LINKAGE    0x02 //  (0000 0010) Linkage
+#define INTERFACE_BIT_UART1      0x08 //  (0000 1000) UART1 (USB)
+#define INTERFACE_BIT_I2C        0x10 //  (0001 0000) I2C
+#define INTERFACE_BIT_DIGITAL_IO 0x20 //  (0010 0000) Digital IO
+#define INTERFACE_BIT_UART2      0x40 //  (0100 0000) UART2
+#define INTERFACE_BIT_BUTTON     0x80 //  (1000 0000) BUTTON
+/* @} */
+
+/** @name Motor Control Mode */
+/* @{ */
+#define MOTOR_CONTROL_MODE_NONE 0 /**< idle mode (No action)*/
+#define MOTOR_CONTROL_MODE_VELOCITY 1 /**< Velocity Control */
+#define MOTOR_CONTROL_MODE_POSITION 2 /**< Position Control */
+#define MOTOR_CONTROL_MODE_TORQUE 3 /**< Torque Control */
+/* @} */
+
+/** @name Safe Run Setting Option */
+/* @{ */
+#define SAFE_RUN_TIMEOUT_FREE 0 /**< free @n 非励磁状態 */
+#define SAFE_RUN_TIMEOUT_DISABLE 1 /**< disable 動作不許可状態 */
+#define SAFE_RUN_TIMEOUT_STOP 2 /**< run_at_velocity(0)  速度制御ゼロ */
+#define SAFE_RUN_TIMEOUT_POS_FIX 3 /**< fix position at the point その場で位置制御*/
+/* @} */
+
+/** @name Led State */
+/* @{ */
+#define LED_STATE_OFF 0 /**< off 消灯 */
+#define LED_STATE_ON_SOLID 1 /**< on solid 点灯 */
+#define LED_STATE_ON_FLASH 2 /**< on flashing 点滅 */
+/* @} */
+
+/** @name Flash State */
+/* @{ */
+#define FLASH_STATE_READY 0	/**< ready, not busy @n 準備OK、ビジーでない、アイドル状態  */
+#define FLASH_STATE_TEACHING_PREPARE 1 /**< preparing for teaching motion @n ティーチング準備中 */
+#define FLASH_STATE_TEACHING_DOING 2 /**< teaching motion @n ティーチング実行中 */
+#define FLASH_STATE_PLAYBACK_PREPARE 3 /**< preparing for playback motion @n プレイバック準備中 */
+#define FLASH_STATE_PLAYBACK_DOING 4 /**< executing playback motion @n プレイバック実行中 */
+#define FLASH_STATE_PLAYBACK_PAUSING 5 /**< pausing playback motion @n プレイバック一時停止中 */
+#define FLASH_STATE_TASKSET_RECORDING 6 /**< recording taskset @n タスクセット記録中 */
+#define FLASH_STATE_TASKSET_DOING 7 /**< doing taskset @n タスクセット実行中 */
+#define FLASH_STATE_TASKSET_PAUSING 8 /**< pausing taskset @n タスクセット一時停止中*/
+#define FLASH_STATE_IMU 20 /**< using IMU (shared resource with the flash) @n  IMU使用中（フラッシュと共通リソース）*/
+/* @} */
+
+/** @name Command (Registers) */
+/* @{ */
 #define CMD_REG_MAX_SPEED 0x02
 #define CMD_REG_MAX_SPEED_LEN 9
 
@@ -101,38 +165,28 @@
 #define CMD_REG_SAVE_ALL_REGISTERS 0x41
 #define CMD_REG_SAVE_ALL_REGISTERS_LEN 5
 
-#define CMD_READ_DEVICE_NAME 0x46
-#define CMD_READ_DEVICE_NAME_LEN 5
-
-#define CMD_READ_DEVICE_INFO 0x47
-#define CMD_READ_DEVICE_INFO_LEN 5
-
 #define CMD_REG_RESET_REGISTER 0x4E
 #define CMD_REG_RESET_REGISTER_LEN 6
 
 #define CMD_REG_RESET_ALL_REGISTERS 0x4F
 #define CMD_REG_RESET_ALL_REGISTERS_LEN 5
 
-// Read Status
-#define CMD_READ_STATUS 0x9A
-#define CMD_READ_STATUS_LEN 5
-
-// I2C
 #define CMD_REG_I2C_SLAVE_ADDR 0xC0
 #define CMD_REG_I2C_SLAVE_ADDR_LEN 6
 
-// Motor Disable and Enable
+/* @} */
+
+// @name Command (Motor Disable and Enable)
+/* @{ */
 #define CMD_DRIVER_DISABLE 0x50
 #define CMD_DRIVER_DISABLE_LEN 5
 
 #define CMD_DRIVER_ENABLE 0x51
 #define CMD_DRIVER_ENABLE_LEN 5
+/* @} */
 
-/** @name Motor Motion Control
- * 
-*/
-//@{
-// Motor Motion Control
+/** @name Command (Motor Action) */
+/* @{ */
 #define CMD_ACT_SPEED 0x58
 #define CMD_ACT_SPEED_LEN 9
 
@@ -192,9 +246,10 @@
 
 #define CMD_ACT_STOP_PLAYBACK_MOTION 0x88
 #define CMD_ACT_STOP_PLAYBACK_MOTION_LEN 5
-//@}
+/* @} */
 
-// Queue
+/** @name Command (Command Queue) */
+/* @{ */
 #define CMD_QUE_PAUSE 0x90
 #define CMD_QUE_PAUSE_LEN 5
 
@@ -209,8 +264,10 @@
 
 #define CMD_QUE_RESET 0x95
 #define CMD_QUE_RESET_LEN 5
+/* @} */
 
-// Recording Taskset
+/** @name Command (Taskset) */
+/* @{ */
 #define CMD_T_START_RECORD_TASKSET 0xA0
 #define CMD_T_START_RECORD_TASKSET_LEN 7
 
@@ -231,8 +288,10 @@
 
 #define CMD_READ_TASKSET_USAGE 0xA7
 #define CMD_READ_TASKSET_USAGE_LEN 5
+/* @} */
 
-// Teaching Motion
+/** @name Command (Teaching and Playback Motion) */
+/* @{ */
 #define CMD_DT_START_TEACH_MOTION_WO_PREP 0xA9
 #define CMD_DT_START_TEACH_MOTION_WO_PREP_LEN 11
 
@@ -260,33 +319,50 @@
 #define CMD_READ_MOTION_USAGE 0xB1
 #define CMD_READ_MOTION_USAGE_LEN 5
 
-// Measurement Read
+#define CMD_DT_READ_MOTION 0xB7
+#define CMD_DT_READ_MOTION_LEN 7
+
+#define CMD_DT_WRITE_MOTION_POSITION 0xB8
+#define CMD_DT_WRITE_MOTION_POSITION_LEN 9
+/* @} */
+
+/** @name Command (Read) */
+/* @{ */
+#define CMD_READ_DEVICE_NAME 0x46
+#define CMD_READ_DEVICE_NAME_LEN 5
+
+#define CMD_READ_DEVICE_INFO 0x47
+#define CMD_READ_DEVICE_INFO_LEN 5
+
+#define CMD_READ_STATUS 0x9A
+#define CMD_READ_STATUS_LEN 5
+
 #define CMD_READ_MOTOR_MEASUREMENT 0xB4
 #define CMD_READ_MOTOR_MEASUREMENT_LEN 5
 
 #define CMD_READ_IMU_MEASUREMENT 0xB5
 #define CMD_READ_IMU_MEASUREMENT_LEN 5
 
-// Read and write Motion (teaching) from master
-#define CMD_DT_READ_MOTION 0xB7
-#define CMD_DT_READ_MOTION_LEN 7
-
-#define CMD_DT_WRITE_MOTION_POSITION 0xB8
-#define CMD_DT_WRITE_MOTION_POSITION_LEN 9
-
-// Button settings
-#define CMD_BUTTON_SETTING 0xBD
-#define CMD_BUTTON_SETTING_LEN 6
-
-// Read the latest error
 #define CMD_READ_ERROR 0xBE
 #define CMD_READ_ERROR_LEN 5
 
-// LED
+/* @} */
+
+
+/** @name Command (Button settings) */
+/* @{ */ 
+#define CMD_BUTTON_SETTING 0xBD
+#define CMD_BUTTON_SETTING_LEN 6
+/* @} */
+
+/** @name Command (Read) */
+/* @{ */
 #define CMD_LED_SET_LED 0xE0
 #define CMD_LED_SET_LED_LEN 9
+/* @} */
 
-// Measurement Notification
+/** @name Command (Measurement) */
+/* @{ */
 #define CMD_MOTOR_START_MEASUREMENT 0xE6
 #define CMD_MOTOR_START_MEASUREMENT_LEN 5
 
@@ -298,8 +374,10 @@
 
 #define CMD_IMU_STOP_MEASUREMENT 0xEB
 #define CMD_IMU_STOP_MEASUREMENT_LEN 5
+/* @} */
 
-// Others
+/** @name Command (Others) */
+/* @{ */
 #define CMD_OTHERS_REBOOT 0xF0
 #define CMD_OTHERS_REBOOT_LEN 5
 
@@ -317,8 +395,10 @@
 
 #define CMD_TASKSET_END_FLAG 0xFF
 #define CMD_TASKSET_END_FLAG_LEN 1
+/* @} */
 
-// Received Data Type
+/** @name Received Data Type and Error*/
+/* @{ */
 #define RECV_DATA_READ 0x40
 // #define RECV_DATA_READ_LEN // depending on register
 
@@ -336,15 +416,9 @@
 #define ERROR_CODE_INVALID_DATA 202
 
 #define DUMMY_DATA_INDICATE_ERROR 0xFF
+/* @} */
 
-/** @name KeiganMotor::interface() bit flag*/
-#define INTERFACE_BIT_BLE        0x01 //  (0000 0001)
-#define INTERFACE_BIT_LINKAGE    0x02 //  (0000 0010)
-#define INTERFACE_BIT_UART1      0x08 //  (0000 1000)
-#define INTERFACE_BIT_I2C        0x10 //  (0001 0000)
-#define INTERFACE_BIT_DIGITAL_IO 0x20 //  (0010 0000)
-#define INTERFACE_BIT_UART2      0x40 //  (0100 0000)
-#define INTERFACE_BIT_BUTTON     0x80 //  (1000 0000)
+
 
 
 #endif // DEFINITIONS_H

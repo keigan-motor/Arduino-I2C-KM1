@@ -48,6 +48,8 @@ Arduino UNO のような 5V 動作のマイコンから駆動する場合は、K
 通信エラーを低減するため、ロジックレベル変換を行って下さい。以下のようなものをお勧めします。
 - https://www.switch-science.com/catalog/1523/
 
+<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/master/img/levelshifter.jpg?raw=true" width="400">
+
 |Level shifter |Arduino UNO|KeiganMotor_I2C|
 |---|---|---|
 |HV|5V     |-  |
@@ -58,12 +60,25 @@ Arduino UNO のような 5V 動作のマイコンから駆動する場合は、K
 |LV2 |-      |SCL|
 |GND  |GND    |GND| 
 
-※ 後日更新予定です。お困りの場合はホームページよりお問い合わせ下さい。
+PCA9306 を使用したレベル変換モジュール http://akizukidenshi.com/catalog/g/gM-05452/ を使用する場合, 裏面の J4, J5 ジャンパーをカッターナイフなどでカットして下さい。本モジュールを動作させるため、基板上のプルアップ抵抗 1kΩでは、KeiganMotor 側のドライブ能力が不足します。外部プルアップ抵抗がなくても正常動作する場合がありますが、必要に応じて、4kΩ以上の外部プルアップ抵抗を追加して下さい。
+
+<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/master/img/pca9306_top.jpg?raw=true" width="400">
+<img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/master/img/pca9306_bottom.jpg?raw=true" width="400">
+
+接続は以下となります。VREF1側は必ず電圧3.3Vの KeiganMotor として下さい。（PCA9306仕様による）
+|PCA9306 |Arduino UNO|KeiganMotor_I2C|
+|---|---|---|
+|VREF1|3.3V     |-|
+|SDA1 |-|SDA|
+|SCL1 |-|SCL|
+|VREF2|5V   |-  |
+|SDA2|SDA(21)|-|
+|SCL2|SCL(22)|SCL|
+|GND  |GND    |GND| 
 
 #### M5Stack
 KeiganMotor を直接接続可能です。
-外部プルアップ抵抗が予め実装されており、ロジックレベルが 3.3Vであるためです。
-（通常の ESP32, ESP8266 では、外部プルアップ抵抗が必要です）
+外部プルアップ 3.3kΩ が予め SDA, SCL ラインに実装されており、ロジックレベルが 3.3Vであるためです。（通常の ESP32, ESP8266 では、外部プルアップ抵抗が必要です）
 
 <img src="https://github.com/keigan-motor/Arduino-I2C-KM1/blob/ver2/img/M5Stack_connection.jpg?raw=true" width="600">
 
@@ -129,7 +144,10 @@ motor.reboot();
 |Wave.ino  |cosine波（余弦波）の位置制御をタイマーを使って行います|
 |PID.ino  |PIDパラメータを読み取ります|
 
-
+## 履歴
+- ver 2.0.2 ESP32 または M5Stack について、コンパイルエラーのバグ修正
+- ver.2.0.1 I2C接続について修正
+- ver.2.0.0 メジャーアップデート
 
 ## 作成者
 

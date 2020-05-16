@@ -34,7 +34,7 @@ static uint8_t rx_buf[KM_I2C_RX_MAX_LEN];
 
 static bool crc16_ready = false;
 
-KeiganMotor::KeiganMotor(uint8_t address, int clock = 1000000)
+KeiganMotor::KeiganMotor(uint8_t address, int clock)
 {
   init(address, clock);
   begin();
@@ -44,7 +44,7 @@ KeiganMotor::KeiganMotor(uint8_t address, int clock = 1000000)
   }
 }
 
-void KeiganMotor::init(uint8_t address, int clock = 1000000)
+void KeiganMotor::init(uint8_t address, int clock)
 {
   _address = address;
   _commandID = 0;
@@ -77,14 +77,14 @@ error_t KeiganMotor::getError(void)
   return error;
 }
 
-bool KeiganMotor::writeFloat(uint8_t cmd, float val, bool response = false)
+bool KeiganMotor::writeFloat(uint8_t cmd, float val, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   float_big_encode(val, data);
   return write(cmd, data, sizeof(float), response);
 }
 
-bool KeiganMotor::write(uint8_t command, uint8_t *value, uint8_t value_len, bool response = false)
+bool KeiganMotor::write(uint8_t command, uint8_t *value, uint8_t value_len, bool response)
 {
   uint8_t len = value_len + 5;
   tx_buf[0] = command;
@@ -118,6 +118,7 @@ bool KeiganMotor::write(uint8_t command, uint8_t *value, uint8_t value_len, bool
     rx_buf[cnt] = Wire.read();
     cnt++;
   }
+  print_hexdump(rx_buf, cnt);
 
   if (rx_buf[1] == RECV_DATA_ERROR && cnt == RECV_DATA_ERROR_LEN)
   {
@@ -242,7 +243,7 @@ bool KeiganMotor::readMotorMeasurement(void)
   }
 
   measurement = {false, 0, 0, 0};
-  //print_hexdump(rx_buf, cnt);
+  print_hexdump(rx_buf, cnt);
 
   if (rx_buf[1] == RECV_DATA_MOTOR_MEAS)
   {
@@ -271,8 +272,8 @@ bool KeiganMotor::readMotorMeasurement(void)
       error.id = 0xFF;
       error.code = ERROR_CODE_CRC_INVALID;
       error.info = 0xFF;
-      //Serial.print("RECV_DATA_MOTOR_MEAS: ");
-      //print_hexdump(rx_buf, cnt);
+      Serial.print("RECV_DATA_MOTOR_MEAS CRC_ERROR: ");
+      print_hexdump(rx_buf, cnt);
     }
   }
   else if (rx_buf[1] == RECV_DATA_ERROR)
@@ -283,6 +284,7 @@ bool KeiganMotor::readMotorMeasurement(void)
       error.id = uint16_big_decode(&rx_buf[2]);
       error.code = uint32_big_decode(&rx_buf[5]);
       error.info = uint32_big_decode(&rx_buf[9]);
+      Serial.print("RECV_DATA_ERROR");
     }
     else
     {
@@ -290,7 +292,7 @@ bool KeiganMotor::readMotorMeasurement(void)
       error.id = 0xFF;
       error.code = ERROR_CODE_CRC_INVALID;
       error.info = 0xFF;
-      //Serial.print("RECV_DATA_ERROR: ");
+      Serial.print("RECV_DATA_ERROR CRC_ERROR: ");
       //print_hexdump(rx_buf, cnt);
     }
   }
@@ -403,94 +405,94 @@ uint32_t KeiganMotor::readUint32(uint8_t reg)
 }
 
 // Set motion control curve type 0:None, 1:Trapezoid
-bool KeiganMotor::curveType(CurveType type, bool response = false)
+bool KeiganMotor::curveType(uint8_t type, bool response)
 {
   uint8_t data[] = {type};
   return write(CMD_REG_CURVE_TYPE, data, sizeof(data), response);
 }
 
 // Set acceleration [rad/s^2]
-bool KeiganMotor::acc(float value, bool response = false)
+bool KeiganMotor::acc(float value, bool response)
 {
   return writeFloat(CMD_REG_ACC, value, response);
 }
 
 // Set deceleration [rad/s^2]
-bool KeiganMotor::dec(float value, bool response = false)
+bool KeiganMotor::dec(float value, bool response)
 {
   return writeFloat(CMD_REG_DEC, value, response);
 }
 
 // Set max torque [N*m]
-bool KeiganMotor::maxTorque(float value, bool response = false)
+bool KeiganMotor::maxTorque(float value, bool response)
 {
   return writeFloat(CMD_REG_MAX_TORQUE, value, response);
 }
 
 // Enable CheckSum
-bool KeiganMotor::enableCheckSum(bool isEnabled, bool response = false)
+bool KeiganMotor::enableCheckSum(bool isEnabled, bool response)
 {
   uint8_t data[] = {isEnabled};
   return write(CMD_OTHERS_ENABLE_CHECK_SUM, data, sizeof(data), response);
 }
 
 // PID Parameters
-bool KeiganMotor::qCurrentP(float value, bool response = false)
+bool KeiganMotor::qCurrentP(float value, bool response)
 {
   return writeFloat(CMD_REG_Q_CURRENT_P, value, response);
 }
 
-bool KeiganMotor::qCurrentI(float value, bool response = false)
+bool KeiganMotor::qCurrentI(float value, bool response)
 {
   return writeFloat(CMD_REG_Q_CURRENT_I, value, response);
 }
 
-bool KeiganMotor::qCurrentD(float value, bool response = false)
+bool KeiganMotor::qCurrentD(float value, bool response)
 {
   return writeFloat(CMD_REG_Q_CURRENT_D, value, response);
 }
 
-bool KeiganMotor::speedP(float value, bool response = false)
+bool KeiganMotor::speedP(float value, bool response)
 {
   return writeFloat(CMD_REG_SPEED_P, value, response);
 }
 
-bool KeiganMotor::speedI(float value, bool response = false)
+bool KeiganMotor::speedI(float value, bool response)
 {
   return writeFloat(CMD_REG_SPEED_I, value, response);
 }
 
-bool KeiganMotor::speedD(float value, bool response = false)
+bool KeiganMotor::speedD(float value, bool response)
 {
   return writeFloat(CMD_REG_SPEED_D, value, response);
 }
 
-bool KeiganMotor::positionP(float value, bool response = false)
+bool KeiganMotor::positionP(float value, bool response)
 {
   return writeFloat(CMD_REG_POSITION_P, value, response);
 }
 
-bool KeiganMotor::positionI(float value, bool response = false)
+bool KeiganMotor::positionI(float value, bool response)
 {
   return writeFloat(CMD_REG_POSITION_I, value, response);
 }
 
-bool KeiganMotor::positionD(float value, bool response = false)
+bool KeiganMotor::positionD(float value, bool response)
 {
   return writeFloat(CMD_REG_POSITION_D, value, response);
 }
 
-bool KeiganMotor::positionIDThreshold(float value, bool response = false)
+bool KeiganMotor::positionIDThreshold(float value, bool response)
 {
   return writeFloat(CMD_REG_POS_ID_THRESHOLD, value, response);
 }
 
-bool KeiganMotor::positionIDThresholdDegree(float value, bool response = false)
+bool KeiganMotor::positionIDThresholdDegree(float value, bool response)
 {
   return positionIDThreshold(DEGREES_TO_RADIANS(value), response);
 }
 
-bool KeiganMotor::resetPID(bool response = false)
+bool KeiganMotor::resetPID(bool response)
 {
   return write(CMD_REG_RESET_PID, NULL, 0, response);
 }
@@ -508,58 +510,58 @@ bool KeiganMotor::resetPID(bool response = false)
 // Any read command can be replyed via received port.
 // If you want to receive notification via I2C port, set flag as "0x90". (Button and I2C are enabled.)
 
-bool KeiganMotor::interface(uint8_t flag, bool response = false)
+bool KeiganMotor::interface(uint8_t flag, bool response)
 {
   uint8_t data[] = {flag};
   return write(CMD_REG_INTERFACE, data, sizeof(data), response);
 }
 
-bool KeiganMotor::limitCurrent(float value, bool response = false)
+bool KeiganMotor::limitCurrent(float value, bool response)
 {
   return writeFloat(CMD_REG_LIMIT_CURRENT, value, response);
 }
 
-bool KeiganMotor::writeResponse(bool isEnabled, bool response = false)
+bool KeiganMotor::writeResponse(bool isEnabled, bool response)
 {
   uint8_t data[] = {(uint8_t)isEnabled};
   return write(CMD_REG_RESPONSE, data, sizeof(data), response);
 }
 
-bool KeiganMotor::safeRun(bool isEnabled, uint32_t timeout, SafeRunOption op, bool response = false)
+bool KeiganMotor::safeRun(bool isEnabled, uint32_t timeout, uint8_t op, bool response)
 {
-  uint8_t buf[] = {isEnabled, 0, 0, 0, 0, (uint8_t)op};
+  uint8_t buf[] = {isEnabled, 0, 0, 0, 0, op};
   uint32_big_encode(timeout, &buf[1]);
   return write(CMD_REG_SAFE_RUN, buf, sizeof(buf), response);
 }
 
 // Set I2C Slave address
 // NOTE) Need to saveAllRegisters() and reboot() to reflect change.
-bool KeiganMotor::i2cSlaveAddress(uint8_t address, bool response = false)
+bool KeiganMotor::i2cSlaveAddress(uint8_t address, bool response)
 {
   uint8_t data[] = {address};
   return write(CMD_REG_I2C_SLAVE_ADDR, data, sizeof(data), response);
 }
 
-bool KeiganMotor::saveAllRegisters(bool response = false)
+bool KeiganMotor::saveAllRegisters(bool response)
 {
   return write(CMD_REG_SAVE_ALL_REGISTERS, NULL, 0, response);
 }
 
-bool KeiganMotor::resetRegister(uint8_t reg, bool response = false)
+bool KeiganMotor::resetRegister(uint8_t reg, bool response)
 {
   uint8_t data[] = {reg};
   return write(CMD_REG_RESET_REGISTER, data, sizeof(data), response);
 }
 
-bool KeiganMotor::resetAllRegisters(bool response = false)
+bool KeiganMotor::resetAllRegisters(bool response)
 {
   return write(CMD_REG_RESET_ALL_REGISTERS, NULL, 0, response);
 }
 
 bool KeiganMotor::readDeviceName(char *name)
 {
-  memset(name, 0, 14);
-  readRegister(CMD_READ_DEVICE_NAME, name, 14);
+  memset(name, 0, 14);  
+  readRegister(CMD_READ_DEVICE_NAME, (uint8_t *)name, 14);
   if (strncmp(name, "KM-", 3) == 0)
     return true;
   return false;
@@ -579,7 +581,7 @@ float KeiganMotor::readMinSpeed(void)
 {
   return readFloat(CMD_REG_MIN_SPEED);
 }
-CurveType KeiganMotor::readCurveType(void)
+uint8_t KeiganMotor::readCurveType(void)
 {
   return readByte(CMD_REG_CURVE_TYPE);
 }
@@ -654,132 +656,132 @@ float KeiganMotor::readPositionIDThresholdDegree(void)
   return RADIANS_TO_DEGREES(readPositionIDThreshold());
 }
 
-bool KeiganMotor::enable(bool response = false)
+bool KeiganMotor::enable(bool response)
 {
   return write(CMD_DRIVER_ENABLE, NULL, 0, response);
 }
 
-bool KeiganMotor::disable(bool response = false)
+bool KeiganMotor::disable(bool response)
 {
   return write(CMD_DRIVER_DISABLE, NULL, 0, response);
 }
 
-bool KeiganMotor::speed(float value, bool response = false)
+bool KeiganMotor::speed(float value, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   float_big_encode(value, data);
   return write(CMD_ACT_SPEED, data, sizeof(float), response);
 }
 
-bool KeiganMotor::speedRpm(float rpm, bool response = false)
+bool KeiganMotor::speedRpm(float rpm, bool response)
 {
   return speed(RPM_TO_RADPERSEC(rpm), response);
 }
 
-bool KeiganMotor::runAtVelocity(float value, bool response = false)
+bool KeiganMotor::runAtVelocity(float value, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   float_big_encode(value, data);
   return write(CMD_ACT_RUN_AT_VELOCITY, data, sizeof(float), response);
 }
 
-bool KeiganMotor::runAtVelocityRpm(float rpm, bool response = false)
+bool KeiganMotor::runAtVelocityRpm(float rpm, bool response)
 {
   return runAtVelocity(RPM_TO_RADPERSEC(rpm), response);
 }
 
-bool KeiganMotor::presetPosition(float position, bool response = false)
+bool KeiganMotor::presetPosition(float position, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   float_big_encode(position, data);
   return write(CMD_ACT_PRESET_POSITION, data, sizeof(float), response);
 }
 
-bool KeiganMotor::presetPositionDegree(float degree, bool response = false)
+bool KeiganMotor::presetPositionDegree(float degree, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   float_big_encode(degree, data);
   return presetPosition(DEGREES_TO_RADIANS(degree), response);
 }
 
-bool KeiganMotor::runForward(bool response = false)
+bool KeiganMotor::runForward(bool response)
 {
   return write(CMD_ACT_RUN_FORWARD, NULL, 0, response);
 }
 
-bool KeiganMotor::runReverse(bool response = false)
+bool KeiganMotor::runReverse(bool response)
 {
   return write(CMD_ACT_RUN_REVERSE, NULL, 0, response);
 }
 
-bool KeiganMotor::moveToPosition(float position, bool response = false)
+bool KeiganMotor::moveToPosition(float position, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   float_big_encode(position, data);
   return write(CMD_ACT_MOVE_TO_POS, data, sizeof(float), response);
 }
 
-bool KeiganMotor::moveToPositionDegree(float degree, bool response = false)
+bool KeiganMotor::moveToPositionDegree(float degree, bool response)
 {
   return moveToPosition(DEGREES_TO_RADIANS(degree), response);
 }
 
-bool KeiganMotor::moveByDistance(float distance, bool response = false)
+bool KeiganMotor::moveByDistance(float distance, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   float_big_encode(distance, data);
   return write(CMD_ACT_MOVE_BY_DIST, data, sizeof(float), response);
 }
 
-bool KeiganMotor::moveByDistanceDegree(float degree, bool response = false)
+bool KeiganMotor::moveByDistanceDegree(float degree, bool response)
 {
   return moveByDistance(DEGREES_TO_RADIANS(degree), response);
 }
 
-bool KeiganMotor::stop(bool response = false)
+bool KeiganMotor::stop(bool response)
 {
   return write(CMD_ACT_STOP, NULL, 0, response);
 }
 
-bool KeiganMotor::free(bool response = false)
+bool KeiganMotor::free(bool response)
 {
   return write(CMD_ACT_FREE, NULL, 0, response);
 }
 
-bool KeiganMotor::wait(uint32_t time, bool response = false)
+bool KeiganMotor::wait(uint32_t time, bool response)
 {
   uint8_t data[sizeof(float)] = {0};
   uint32_big_encode(time, data);
   return write(CMD_QUE_WAIT, data, sizeof(float), response);
 }
 
-bool KeiganMotor::led(LedState state, uint8_t r, uint8_t g, uint8_t b, bool response = false)
+bool KeiganMotor::led(uint8_t state, uint8_t r, uint8_t g, uint8_t b, bool response)
 {
   uint8_t data[4] = {(uint8_t)state, r, g, b};
   return write(CMD_LED_SET_LED, data, sizeof(data), response);
 }
 
-bool KeiganMotor::startMotorMeasurement(bool response = false)
+bool KeiganMotor::startMotorMeasurement(bool response)
 {
   return write(CMD_MOTOR_START_MEASUREMENT, NULL, 0, response);
 }
 
-bool KeiganMotor::stopMotorMeasurement(bool response = false)
+bool KeiganMotor::stopMotorMeasurement(bool response)
 {
   return write(CMD_MOTOR_STOP_MEASUREMENT, NULL, 0, response);
 }
 
-bool KeiganMotor::startIMUMeasurement(bool response = false)
+bool KeiganMotor::startIMUMeasurement(bool response)
 {
   return write(CMD_IMU_START_MEASUREMENT, NULL, 0, response);
 }
 
-bool KeiganMotor::stopIMUMeasurement(bool response = false)
+bool KeiganMotor::stopIMUMeasurement(bool response)
 {
   return write(CMD_IMU_STOP_MEASUREMENT, NULL, 0, response);
 }
 
-bool KeiganMotor::reboot(bool response = false)
+bool KeiganMotor::reboot(bool response)
 {
   return write(CMD_OTHERS_REBOOT, NULL, 0, response);
 }
