@@ -118,7 +118,7 @@ bool KeiganMotor::write(uint8_t command, uint8_t *value, uint8_t value_len, bool
     rx_buf[cnt] = Wire.read();
     cnt++;
   }
-  print_hexdump(rx_buf, cnt);
+  //print_hexdump(rx_buf, cnt);
 
   if (rx_buf[1] == RECV_DATA_ERROR && cnt == RECV_DATA_ERROR_LEN)
   {
@@ -243,7 +243,7 @@ bool KeiganMotor::readMotorMeasurement(void)
   }
 
   measurement = {false, 0, 0, 0};
-  print_hexdump(rx_buf, cnt);
+  //print_hexdump(rx_buf, cnt);
 
   if (rx_buf[1] == RECV_DATA_MOTOR_MEAS)
   {
@@ -273,7 +273,7 @@ bool KeiganMotor::readMotorMeasurement(void)
       error.code = ERROR_CODE_CRC_INVALID;
       error.info = 0xFF;
       Serial.print("RECV_DATA_MOTOR_MEAS CRC_ERROR: ");
-      print_hexdump(rx_buf, cnt);
+      //print_hexdump(rx_buf, cnt);
     }
   }
   else if (rx_buf[1] == RECV_DATA_ERROR)
