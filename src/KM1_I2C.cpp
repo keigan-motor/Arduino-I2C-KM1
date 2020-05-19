@@ -72,7 +72,7 @@ uint16_t KeiganMotor::appendID(uint8_t *data)
   return cmd;
 }
 
-error_t KeiganMotor::getError(void)
+km_error_t KeiganMotor::getError(void)
 {
   return error;
 }
@@ -567,7 +567,7 @@ bool KeiganMotor::readDeviceName(char *name)
   return false;
 }
 
-error_t KeiganMotor::readError(void)
+km_error_t KeiganMotor::readError(void)
 {
   write(CMD_READ_ERROR, NULL, 0, true);
   return error;

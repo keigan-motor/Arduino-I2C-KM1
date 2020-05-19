@@ -21,7 +21,7 @@
 #define LIBRARY_VERSION 2.0.0
 
 /**
-   error_t
+   km_error_t
    @brief Error or success information received from KeiganMotor
 */
 typedef struct
@@ -31,7 +31,7 @@ typedef struct
    uint8_t cmd;   /**< command number */
    uint8_t code;  /**< error code */
    uint32_t info; /**< error detail information */
-} error_t;
+} km_error_t;
 
 /**
    motor_meas_t
@@ -157,7 +157,7 @@ public:
    imu_meas_t imu; // IMU Measurement
 
    /** @brief Error or success information*/
-   error_t error;
+   km_error_t error;
 
 
 
@@ -176,11 +176,11 @@ public:
    /** 
      * @brief Get the error that master retains. @n
      * getError() is designed to use after getting response of write command.
-     * @return the latest error that Arduino retains (see error_t)
+     * @return the latest error that Arduino retains (see km_error_t)
      * @code
      *    bool result = m.runFoward(true);
      *    if(result != 0){
-     *      error_t error = m.getError();
+     *      km_error_t error = m.getError();
      *      Serial.print("error code is ");
      *      Serial.println(error.code);
      *    }
@@ -190,7 +190,7 @@ public:
      * send a command to request the latest error data that KeiganMotor retains. @n
      * 
     */
-   error_t getError();
+   km_error_t getError();
 
    /** @name Write register */
    /* @{ */
@@ -567,12 +567,12 @@ public:
    /**
      * @brief Read the latest error
      * @details The response data is the same formart as error response of write command.
-     * @return the latest error (see error_t)
+     * @return the latest error (see km_error_t)
      * @note The difference between getError() and this function is that @n
      * getError() just returns the retained error data by master (Arduino), while readError()
      * send a command to request the latest error data that KeiganMotor retains.
      */
-   error_t readError(void);
+   km_error_t readError(void);
    /* @} */
 
    /** @name Read PID controller parameters*/
