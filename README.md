@@ -40,7 +40,7 @@ Please refer to the following about pull-up resister.
 
 
 ### Pullup resisters
-Please add external pullup resisters from 1kOhm to 10kOhm as follows. (INPUT_PULLUP is not recommended but may work well especially for Arduino UNO.)
+Please add external pullup resisters from 3kOhm to 10kOhm as follows. (INPUT_PULLUP is not recommended but may work well especially for Arduino UNO.)
 - between SDA and 3.3V // Default SDA = 21
 - between SCL and 3.3V // Default SCL = 22
 
