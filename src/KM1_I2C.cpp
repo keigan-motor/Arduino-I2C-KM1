@@ -567,6 +567,13 @@ bool KeiganMotor::readDeviceName(char *name)
   return false;
 }
 
+bool KeiganMotor::readDeviceInfo(char *info)
+{
+  memset(info, 0, 50);  
+  readRegister(CMD_READ_DEVICE_INFO, (uint8_t *)info, 50);
+  return true;
+}
+
 km_error_t KeiganMotor::readError(void)
 {
   write(CMD_READ_ERROR, NULL, 0, true);
